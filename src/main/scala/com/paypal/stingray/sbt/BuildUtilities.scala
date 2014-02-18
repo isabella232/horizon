@@ -1,4 +1,4 @@
-package sbtbuildutils
+package com.paypal.stingray.sbt
 
 import sbt._
 import io.Source
@@ -9,13 +9,18 @@ import sbtrelease._
 import ReleasePlugin._
 import ReleaseKeys._
 
-
 object BuildUtilities extends Plugin
 {
 
   val changelog = "CHANGELOG.md"
 
   private def getReleasedVersion(st: State) = st.get(versions).getOrElse(sys.error("No versions are set! Was this release part executed before inquireVersions?"))._1
+
+  case class ChangelogInfo(msg: String, author: String)
+
+  class ChangelogInfoMissingException(e: Throwable) extends Exception(e)
+  class ChangelogUpdateException(e: Throwable) extends Exception(e)
+  class ChangelogCommitException(e: Throwable) extends Exception(e)
 
   lazy val checkForChangelog: ReleaseStep = { st: State =>
     try {
@@ -31,7 +36,7 @@ object BuildUtilities extends Plugin
     try {
       val info = getChangelogInfo
       updateChangelog(info, st)
-      //commitChangelog(st)
+      commitChangelog(st)
       st
 
     } catch {
@@ -41,12 +46,6 @@ object BuildUtilities extends Plugin
       case e: Throwable => sys.error("There was an error updating the changelog: "+ e.getMessage)
     }
   }
-
-  case class ChangelogInfo(msg: String, author: String)
-
-  class ChangelogInfoMissingException(e: Throwable) extends Exception(e)
-  class ChangelogUpdateException(e: Throwable) extends Exception(e)
-  class ChangelogCommitException(e: Throwable) extends Exception(e)
 
   private def getChangelogInfo: ChangelogInfo = {
     try {
@@ -94,7 +93,4 @@ object BuildUtilities extends Plugin
       case e: Throwable  => throw new ChangelogCommitException(e)
     }
   }
-
-  
-
 }
