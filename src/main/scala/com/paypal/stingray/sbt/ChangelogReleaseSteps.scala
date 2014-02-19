@@ -9,7 +9,7 @@ import java.util.Calendar
 import java.io.PrintWriter
 
 /**
- * Docs to come
+ * Adds [[https://github.com/sbt/sbt-release sbtrelease]] steps for checking and updating Changelog.
  */
 object ChangelogReleaseSteps {
   val changelog = "CHANGELOG.md"
@@ -22,6 +22,9 @@ object ChangelogReleaseSteps {
   class ChangelogUpdateException(e: Throwable) extends Exception(e)
   class ChangelogCommitException(e: Throwable) extends Exception(e)
 
+  /**
+   * Checks to see if mandatory author and message arguments are specified during release.
+   */
   lazy val checkForChangelog: ReleaseStep = { st: State =>
     try {
       getChangelogInfo
@@ -32,6 +35,9 @@ object ChangelogReleaseSteps {
     }
   }
 
+  /**
+   * Updates changelog with author and message arguments, then commits changes.
+   */
   lazy val updateChangelog: ReleaseStep = { st: State =>
     try {
       val info = getChangelogInfo
