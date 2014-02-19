@@ -14,6 +14,9 @@ object UtilitiesBuild extends Build {
     sbtPlugin := true,
     resolvers += "Stingray Nexus" at s"$stingrayNexusHost/nexus/content/groups/public/",
     addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.2"),
+    libraryDependencies ++= Seq(
+      "org.specs2" %% "specs2" % "2.3.8" % "test"
+    ),
     publishTo <<= (version) { version: String =>
       val stingrayNexus = s"$stingrayNexusHost/nexus/content/repositories/"
       val publishFolder = if(version.trim.endsWith("SNAPSHOT")) "snapshots" else "releases"

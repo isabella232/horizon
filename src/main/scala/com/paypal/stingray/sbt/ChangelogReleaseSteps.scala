@@ -10,6 +10,8 @@ import java.io.PrintWriter
 
 /**
  * Adds [[https://github.com/sbt/sbt-release sbtrelease]] steps for checking and updating Changelog.
+ *
+ * Import if defining custom release process and need access to changelog steps.
  */
 object ChangelogReleaseSteps {
   val changelog = "CHANGELOG.md"

@@ -6,8 +6,14 @@ import ReleaseStateTransformations._
 
 /**
  * Primary plugin object used to access all major build utilities.
+ * To access add the following import statement:
+ *
+ * {{{
+ *   import com.paypal.stingray.sbt.BuildUtilities._
+ * }}}
+ *
  */
-object BuildUtilities extends Plugin
+object BuildUtilities
 {
   /**
    * Default release process for Stingray projects,
