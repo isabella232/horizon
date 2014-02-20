@@ -75,10 +75,8 @@ object AdditionalReleaseSteps {
   private def checkChangelog(st: State) = {
     try {
       val currentChangelog = Source.fromFile(changelog).mkString
-      println("current changelog is: " + currentChangelog)
       val version = getReleasedVersion(st)
-      println("current version is " + version)
-      if (! currentChangelog.contains(s"# $version ")) {
+      if (! currentChangelog.contains(version)) {
         throw new Exception(s"No changelog entry found for current release version $version.")
       }
     } catch {
