@@ -2,6 +2,7 @@ package com.paypal.stingray.sbt
 
 import org.specs2._
 import com.paypal.stingray.sbt.ChangelogReleaseSteps._
+import java.lang.RuntimeException
 
 /**
  * Tests update and commit release steps in [[com.paypal.stingray.sbt.ChangelogReleaseSteps]]
@@ -13,7 +14,7 @@ class ChangelogReleaseStepsSpec extends Specification with ScalaCheck { def is =
 
   case class CheckForChangelogNoProps() {
     def ok = {
-      checkForChangelog.action(null) should throwAn[Exception]("You must provide a changelog message and author")
+      checkForChangelog.action(null) should throwAn[RuntimeException](ChangelogInfoMissingMessage)
     }
   }
 

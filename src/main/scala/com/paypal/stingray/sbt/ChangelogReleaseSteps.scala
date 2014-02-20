@@ -20,6 +20,10 @@ object ChangelogReleaseSteps {
 
   case class ChangelogInfo(msg: String, author: String)
 
+  val ChangelogInfoMissingMessage = "You must provide a changelog message and author"
+  val ChangelogUpdateMessage = "There was an error writing to the changelog: "
+  val ChangelogCommitMessage = "There was an error committing the changelog: "
+
   class ChangelogInfoMissingException(e: Throwable) extends Exception(e)
   class ChangelogUpdateException(e: Throwable) extends Exception(e)
   class ChangelogCommitException(e: Throwable) extends Exception(e)
@@ -48,10 +52,10 @@ object ChangelogReleaseSteps {
       st
 
     } catch {
-      case info: ChangelogInfoMissingException => sys.error("You must provide a changelog message and author")
-      case update: ChangelogUpdateException=> sys.error("There was an error writing to the changelog: " + update.getMessage)
-      case commit: ChangelogCommitException => sys.error("There was an error committing the changelog: "+ commit.getMessage)
-      case e: Throwable => sys.error("There was an error updating the changelog: "+ e.getMessage)
+      case info: ChangelogInfoMissingException => sys.error(ChangelogInfoMissingMessage)
+      case update: ChangelogUpdateException=> sys.error(ChangelogUpdateMessage + update.getMessage)
+      case commit: ChangelogCommitException => sys.error(ChangelogCommitMessage + commit.getMessage)
+      case e: Throwable => sys.error("There was an error updating the changelog: " + e.getMessage)
     }
   }
 
