@@ -1,6 +1,5 @@
 package com.paypal.stingray.sbt
 
-import sbt._
 import sbtrelease._
 import ReleaseStateTransformations._
 
