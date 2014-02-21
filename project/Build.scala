@@ -2,7 +2,8 @@ import sbt._
 import sbt.Keys._
 import sbtrelease._
 import scala.io.Source
-import scala.Some
+import net.virtualvoid.sbt.graph.Plugin
+import org.scalastyle.sbt.ScalastylePlugin
 import ReleaseStateTransformations._
 import ReleasePlugin._
 import ReleaseKeys._
@@ -12,7 +13,7 @@ object BuildSettings {
 
   val stingrayNexusHost = "http://stingray-nexus.stratus.dev.ebay.com"
 
-  lazy val standardSettings = Defaults.defaultSettings ++ releaseSettings ++ Seq(
+  lazy val standardSettings = Defaults.defaultSettings ++ releaseSettings ++ Plugin.graphSettings ++ ScalastylePlugin.Settings ++ Seq(
     organization := "com.paypal.stingray",
     name := "sbt-build-utilities",
     sbtPlugin := true,
@@ -75,7 +76,7 @@ object AdditionalReleaseSteps {
     try {
       val currentChangelog = Source.fromFile(changelog).mkString
       val version = getReleasedVersion(st)
-      if (! currentChangelog.contains(version)) {
+      if (!currentChangelog.contains(version)) {
         throw new Exception(s"No changelog entry found for current release version $version.")
       }
     } catch {

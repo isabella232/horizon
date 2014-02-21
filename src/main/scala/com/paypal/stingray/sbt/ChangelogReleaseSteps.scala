@@ -16,7 +16,8 @@ import java.io.PrintWriter
 object ChangelogReleaseSteps {
   val changelog = "CHANGELOG.md"
 
-  private def getReleasedVersion(st: State): String = st.get(versions).getOrElse(sys.error("No versions are set! Was this release part executed before inquireVersions?"))._1
+  private def getReleasedVersion(st: State): String = st.get(versions).getOrElse(
+    sys.error("No versions are set! Was this release part executed before inquireVersions?"))._1
 
   case class ChangelogInfo(msg: String, author: String)
 
@@ -37,7 +38,7 @@ object ChangelogReleaseSteps {
       st
     } catch {
       case info: ChangelogInfoMissingException => sys.error("You must provide a changelog message and author")
-      case e: Throwable => sys.error("There was an error getting the changelog info: "+ e.getMessage)
+      case e: Throwable => sys.error("There was an error getting the changelog info: " + e.getMessage)
     }
   }
 
@@ -98,7 +99,8 @@ object ChangelogReleaseSteps {
 
   private def commitChangelog(st: State) {
     try {
-      val vcs = Project.extract(st).get(versionControlSystem).getOrElse(sys.error("Aborting release. Working directory is not a repository of a recognized VCS."))
+      val vcs = Project.extract(st).get(versionControlSystem).getOrElse(
+        sys.error("Aborting release. Working directory is not a repository of a recognized VCS."))
       vcs.add(changelog) !! st.log
       vcs.commit("Changelog updated for " + getReleasedVersion(st)) ! st.log
     } catch {
