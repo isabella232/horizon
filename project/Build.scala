@@ -57,7 +57,6 @@ object UtilitiesBuild extends Build {
 object AdditionalReleaseSteps {
 
   lazy val ensureChangelogEntry: ReleaseStep = { st: State =>
-
     try {
       checkChangelog(st)
       st
@@ -70,9 +69,9 @@ object AdditionalReleaseSteps {
 
   class ChangelogEntryMissingException(e: Throwable) extends Exception(e)
 
-  private def getReleasedVersion(st: State) = st.get(versions).getOrElse(sys.error("No versions are set! Was this release part executed before inquireVersions?"))._1
+  private def getReleasedVersion(st: State): String = st.get(versions).getOrElse(sys.error("No versions are set! Was this release part executed before inquireVersions?"))._1
 
-  private def checkChangelog(st: State) = {
+  private def checkChangelog(st: State) {
     try {
       val currentChangelog = Source.fromFile(changelog).mkString
       val version = getReleasedVersion(st)

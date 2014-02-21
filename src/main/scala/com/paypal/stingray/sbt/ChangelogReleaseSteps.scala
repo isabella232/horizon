@@ -16,7 +16,7 @@ import java.io.PrintWriter
 object ChangelogReleaseSteps {
   val changelog = "CHANGELOG.md"
 
-  private def getReleasedVersion(st: State) = st.get(versions).getOrElse(sys.error("No versions are set! Was this release part executed before inquireVersions?"))._1
+  private def getReleasedVersion(st: State): String = st.get(versions).getOrElse(sys.error("No versions are set! Was this release part executed before inquireVersions?"))._1
 
   case class ChangelogInfo(msg: String, author: String)
 
