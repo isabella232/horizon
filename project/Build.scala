@@ -4,6 +4,8 @@ import sbtrelease._
 import scala.io.Source
 import net.virtualvoid.sbt.graph.Plugin
 import org.scalastyle.sbt.ScalastylePlugin
+import de.johoop.jacoco4sbt._
+import JacocoPlugin._
 import ReleaseStateTransformations._
 import ReleasePlugin._
 import ReleaseKeys._
@@ -13,7 +15,9 @@ object BuildSettings {
 
   val stingrayNexusHost = "http://stingray-nexus.stratus.dev.ebay.com"
 
-  lazy val standardSettings = Defaults.defaultSettings ++ releaseSettings ++ Plugin.graphSettings ++ ScalastylePlugin.Settings ++ Seq(
+  lazy val standardPluginSettings = Defaults.defaultSettings ++ releaseSettings ++ Plugin.graphSettings ++ ScalastylePlugin.Settings ++ jacoco.settings
+
+  lazy val standardSettings = standardPluginSettings ++ Seq(
     organization := "com.paypal.stingray",
     name := "sbt-build-utilities",
     sbtPlugin := true,
