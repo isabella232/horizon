@@ -2,6 +2,9 @@ package com.paypal.stingray.sbt
 
 import sbtrelease._
 import ReleaseStateTransformations._
+import sbt._
+import sbt.Def
+import sbt.Keys._
 
 /**
  * Primary plugin object used to access all major build utilities.
@@ -12,8 +15,8 @@ import ReleaseStateTransformations._
  * }}}
  *
  */
-object BuildUtilities
-{
+object BuildUtilities extends GitInfo {
+
   /**
    * Default release process for Stingray projects,
    * in the form of a sequence of [[https://github.com/sbt/sbt-release sbtrelease]] release steps
