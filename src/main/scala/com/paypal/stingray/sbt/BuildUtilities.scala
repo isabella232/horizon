@@ -2,9 +2,6 @@ package com.paypal.stingray.sbt
 
 import sbtrelease._
 import ReleaseStateTransformations._
-import sbt._
-import sbt.Def
-import sbt.Keys._
 
 /**
  * Primary plugin object used to access all major build utilities.
