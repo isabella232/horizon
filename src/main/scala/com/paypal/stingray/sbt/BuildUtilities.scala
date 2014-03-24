@@ -12,8 +12,8 @@ import ReleaseStateTransformations._
  * }}}
  *
  */
-object BuildUtilities
-{
+object BuildUtilities extends GitInfo {
+
   /**
    * Default release process for Stingray projects,
    * in the form of a sequence of [[https://github.com/sbt/sbt-release sbtrelease]] release steps
