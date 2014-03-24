@@ -23,13 +23,26 @@ trait GitInfo {
     val repo = (new FileRepositoryBuilder).findGitDir.build
     val git = new Git(repo)
     val status = git.status.call
-    val commit = git.log.call.iterator.next
-    val author = commit.getAuthorIdent
-    Seq(
+
+    val repoInfo = Seq(
       "git.branch" -> repo.getBranch,
-      "git.branch.clean" -> status.isClean.toString,
-      "git.commit.sha" -> commit.name,
-      "git.commit.date" -> author.getWhen.toString
+      "git.branch.clean" -> status.isClean.toString
     )
+
+    val commit = Option(git.log.call.iterator) match {
+      case Some(i) if i.hasNext => Some(i.next)
+      case _ => None
+    }
+
+    commit match {
+      case Some(c) =>
+        val author = c.getAuthorIdent
+        repoInfo ++ Seq(
+          "git.commit.sha" -> c.name,
+          "git.commit.date" -> author.getWhen.toString
+        )
+      case None => repoInfo
+    }
   }
+
 }

@@ -7,7 +7,7 @@ import java.lang.RuntimeException
 /**
  * Tests update and commit release steps in [[com.paypal.stingray.sbt.ChangelogReleaseSteps]]
  */
-class ChangelogReleaseStepsSpec extends Specification with ScalaCheck { def is = s2"""
+class ChangelogReleaseStepsSpec extends Specification with ScalaCheck { override def is = s2"""
   checkForChangelog without properties should return exception    ${CheckForChangelogNoProps().ok}
 
 """
