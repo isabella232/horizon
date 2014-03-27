@@ -13,13 +13,16 @@ import ReleaseKeys._
 object BuildSettings {
   import AdditionalReleaseSteps._
 
+  val org = "com.paypal.stingray"
+  val scalaVsn = "2.10.4"
   val stingrayNexusHost = "http://stingray-nexus.stratus.dev.ebay.com"
 
   lazy val standardPluginSettings = Defaults.defaultSettings ++ releaseSettings ++ Plugin.graphSettings ++ ScalastylePlugin.Settings ++ jacoco.settings
 
   lazy val standardSettings = standardPluginSettings ++ Seq(
-    organization := "com.paypal.stingray",
+    organization := org,
     name := "sbt-build-utilities",
+    scalaVersion := scalaVsn,
     sbtPlugin := true,
     conflictManager := ConflictManager.strict,
     fork := true,
