@@ -29,6 +29,7 @@ object BuildSettings {
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     scalacOptions in Test ++= Seq("-Yrangepos"),
     resolvers += "Stingray Nexus" at s"$stingrayNexusHost/nexus/content/groups/public/",
+    dependencyOverrides <+= scalaVersion { vsn => "org.scala-lang" % "scala-library" % vsn },
     addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.2"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit" % "org.eclipse.jgit" % "3.3.0.201403021825-r",
