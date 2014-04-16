@@ -2,6 +2,9 @@ package com.paypal.stingray.sbt
 
 import sbtrelease._
 import ReleaseStateTransformations._
+import sbt._
+import com.typesafe.sbt.SbtSite.site
+
 
 /**
  * Primary plugin object used to access all major build utilities.
@@ -39,4 +42,8 @@ object BuildUtilities extends GitInfo {
     pushChanges
   )
 
+  lazy val settings: Seq[Setting[_]] = site.settings ++ ghpages.settings
+
 }
+
+
