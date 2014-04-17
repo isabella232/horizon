@@ -7,6 +7,13 @@ import com.typesafe.sbt.SbtGit.GitKeys._
 import com.typesafe.sbt.SbtGit.GitKeys
 import com.typesafe.sbt.git.GitRunner
 
+/*
+ * Custom implementation of https://github.com/sbt/sbt-ghpages, uses jgit to find remote git url without needing to statically specify.
+ *
+ * sbt-ghpages Copyright (c) 2008, 2009, 2010, 2011 Josh Suereth, Steven Blundy, Josh Cough,
+ * Mark Harrah, Stuart Roebuck, Tony Sloane, Vesa Vilhonen, Jason Zaugg All rights reserved.
+ */
+
 object GhPagesKeys {
   lazy val repository = SettingKey[File]("ghpages-repository", "sandbox environment where git project ghpages branch is checked out.")
   lazy val updatedRepository = TaskKey[File]("ghpages-updated-repository", "Updates the local ghpages branch on the sandbox repository.")
