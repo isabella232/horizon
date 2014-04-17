@@ -4,6 +4,7 @@ import sbtrelease._
 import ReleaseStateTransformations._
 import sbt._
 import com.typesafe.sbt.SbtSite.site
+import sbtunidoc.Plugin._
 
 
 /**
@@ -42,7 +43,7 @@ object BuildUtilities extends GitInfo {
     pushChanges
   )
 
-  lazy val settings: Seq[Setting[_]] = site.settings ++ ghpages.settings
+  lazy val settings: Seq[Setting[_]] = site.settings ++ ghpages.settings ++ unidocSettings
 
 }
 

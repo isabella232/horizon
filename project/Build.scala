@@ -33,6 +33,7 @@ object BuildSettings {
     addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.2"),
     addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.7.2"),
     addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.6.4-SNAPSHOT"),
+    addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.0"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit" % "org.eclipse.jgit" % "3.3.0.201403021825-r",
       "org.specs2" %% "specs2" % "2.3.8" % "test"
