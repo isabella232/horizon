@@ -1,6 +1,7 @@
 package com.paypal.stingray.sbt
 
 import sbt._
+import sbt.Keys._
 import sbtrelease._
 import ReleaseStateTransformations._
 import com.typesafe.sbt.SbtSite.site
@@ -77,7 +78,7 @@ object BuildUtilities extends GitInfo {
    *
    * 3. run sbt unidoc ghpages-push-site from the command line
    */
-  lazy val docSettings: Seq[Setting[_]] = site.settings ++ ghpages.settings ++ unidocSettings
+  lazy val docSettings: Seq[Setting[_]] = site.settings ++ ghpages.settings ++ unidocSettings ++ Seq(site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"))
 
 }
 

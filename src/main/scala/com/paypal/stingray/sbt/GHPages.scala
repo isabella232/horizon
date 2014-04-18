@@ -6,6 +6,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import com.typesafe.sbt.SbtGit.GitKeys._
 import com.typesafe.sbt.SbtGit.GitKeys
 import com.typesafe.sbt.git.GitRunner
+import sbtrelease.ReleaseStep
 
 /*
  * Custom implementation of https://github.com/sbt/sbt-ghpages, uses jgit to find remote git url without needing to statically specify.
@@ -70,5 +71,9 @@ object ghpages {
 
   val commitMessage = sys.env.getOrElse("SBT_GHPAGES_COMMIT_MESSAGE", "updated site")
   private def pushSite0 = (syncLocal, GitKeys.gitRunner, streams) map { (repo, git, s) => git.commitAndPush(commitMessage)(repo, s.log) }
+
+  lazy val generateAndPushDocs: ReleaseStep = { st: State =>
+    st
+  }
 
 }
