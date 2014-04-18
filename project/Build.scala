@@ -1,6 +1,11 @@
+import com.typesafe.sbt.SbtGhPages.ghpages
+import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
+import com.typesafe.sbt.SbtGit.git
+import com.typesafe.sbt.SbtSite.site
 import sbt._
 import sbt.Keys._
 import sbtrelease._
+import sbtunidoc.Plugin._
 import scala.io.Source
 import net.virtualvoid.sbt.graph.Plugin
 import org.scalastyle.sbt.ScalastylePlugin
@@ -17,7 +22,11 @@ object BuildSettings {
   val scalaVsn = "2.10.4"
   val stingrayNexusHost = "http://stingray-nexus.stratus.dev.ebay.com"
 
-  lazy val standardPluginSettings = Defaults.defaultSettings ++ releaseSettings ++ Plugin.graphSettings ++ ScalastylePlugin.Settings ++ jacoco.settings
+  lazy val standardPluginSettings = Defaults.defaultSettings ++ releaseSettings ++
+    Plugin.graphSettings ++ ScalastylePlugin.Settings ++ jacoco.settings ++ site.settings ++
+    ghpages.settings ++ unidocSettings ++ Seq(ghpagesNoJekyll := false,
+    site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
+    git.remoteRepo := "https://github.paypal.com/Customers-R/sbt-build-utilities.git")
 
   lazy val standardSettings = standardPluginSettings ++ Seq(
     organization := org,
