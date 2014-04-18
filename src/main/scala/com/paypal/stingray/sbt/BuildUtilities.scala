@@ -6,6 +6,9 @@ import sbtrelease._
 import ReleaseStateTransformations._
 import com.typesafe.sbt.SbtSite.site
 import sbtunidoc.Plugin._
+import com.typesafe.sbt.SbtGhPages.ghpages
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import com.typesafe.sbt.SbtGit.git
 
 
 /**
@@ -44,17 +47,21 @@ object BuildUtilities extends GitInfo {
     pushChanges
   )
 
+  private val repo = (new FileRepositoryBuilder).findGitDir.build
+  private val originUrl = repo.getConfig.getString("remote", "origin", "url")
+
+  // TODO: Update docs with proper process after finalizing
   /**
    * Settings val which provides all settings to generate and publish project documentation to the gh-pages branch of the repository.
    *
    * Combines sbt-site, sbt-unidoc and custom ghpages settings. Customize settings in your project's build file as needed.
    *
    * sbt-site provides commands to create a project site for publishing,
-   * and includes commands for auto doc generation: [[https://github.com/sbt/sbt-site]]
+   * and includes commands for auto doc generation. [[https://github.com/sbt/sbt-site]]
    *
-   * sbt-unidoc works with sbt-site to combine multiple sub-project documentation into one "site": [[https://github.com/sbt/sbt-unidoc]]
+   * sbt-unidoc works with sbt-site to combine multiple sub-project documentation into one "site". [[https://github.com/sbt/sbt-unidoc]]
    *
-   * ghpages provides commands to easily push a created "site" to the gh-pages branch of the repository.
+   * ghpages provides commands to easily push a created "site" to the gh-pages branch of the repository. [[https://github.com/sbt/sbt-ghpages]]
    *
    * To use in a project with no sub-projects:
    *
@@ -78,8 +85,10 @@ object BuildUtilities extends GitInfo {
    *
    * 3. run sbt unidoc ghpages-push-site from the command line
    */
-  lazy val docSettings: Seq[Setting[_]] = site.settings ++ ghpages.settings ++ unidocSettings ++ Seq(site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"))
-
+  lazy val docSettings: Seq[Setting[_]] = site.settings ++ ghpages.settings ++ unidocSettings ++ Seq(
+    site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
+    git.remoteRepo := originUrl
+  )
 }
 
 
