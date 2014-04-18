@@ -2,11 +2,6 @@ package com.paypal.stingray.sbt
 
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.api.Git
-import sbt._
-import sbt.Keys._
-import com.typesafe.sbt.SbtGit.GitKeys._
-import com.typesafe.sbt.SbtGit.GitKeys
-import com.typesafe.sbt.git.GitRunner
 
 /**
  * Provides access to Git repository information for the current build.
