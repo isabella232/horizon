@@ -22,11 +22,19 @@ object BuildSettings {
   val scalaVsn = "2.10.4"
   val stingrayNexusHost = "http://stingray-nexus.stratus.dev.ebay.com"
 
-  lazy val standardPluginSettings = Defaults.defaultSettings ++ releaseSettings ++
-    Plugin.graphSettings ++ ScalastylePlugin.Settings ++ jacoco.settings ++ site.settings ++
-    ghpages.settings ++ unidocSettings ++ Seq(ghpagesNoJekyll := false,
-    site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
-    git.remoteRepo := "https://github.paypal.com/Customers-R/sbt-build-utilities.git")
+  lazy val standardPluginSettings = Defaults.defaultSettings ++
+    releaseSettings ++
+    Plugin.graphSettings ++
+    ScalastylePlugin.Settings ++
+    jacoco.settings ++
+    site.settings ++
+    ghpages.settings ++
+    unidocSettings ++
+    Seq(
+      ghpagesNoJekyll := false,
+      site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
+      git.remoteRepo := "https://github.paypal.com/Customers-R/sbt-build-utilities.git"
+    )
 
   lazy val standardSettings = standardPluginSettings ++ Seq(
     organization := org,
