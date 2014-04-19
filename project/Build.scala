@@ -38,7 +38,10 @@ object BuildSettings {
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     scalacOptions in Test ++= Seq("-Yrangepos"),
     resolvers += "Stingray Nexus" at s"$stingrayNexusHost/nexus/content/groups/public/",
-    dependencyOverrides <+= scalaVersion { vsn => "org.scala-lang" % "scala-library" % vsn },
+    dependencyOverrides <++= scalaVersion { vsn => Set(
+      "org.scala-lang" % "scala-library"  % vsn,
+      "org.scala-lang" % "scala-compiler" % vsn
+    )},
     addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.2"),
     addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.2" exclude("com.typesafe.sbt", "sbt-git")),
     addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.7.0"),
@@ -46,9 +49,9 @@ object BuildSettings {
     addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.0"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit" % "org.eclipse.jgit" % "3.3.0.201403021825-r",
-      "org.specs2" %% "specs2" % "2.3.8" % "test"
+      "org.specs2" %% "specs2" % "2.3.11" % "test"
     ),
-    publishTo <<= (version) { version: String =>
+    publishTo <<= version { version: String =>
       val stingrayNexus = s"$stingrayNexusHost/nexus/content/repositories/"
       val publishFolder = if(version.trim.endsWith("SNAPSHOT")) "snapshots" else "releases"
       Some(publishFolder at stingrayNexus + s"$publishFolder/")
