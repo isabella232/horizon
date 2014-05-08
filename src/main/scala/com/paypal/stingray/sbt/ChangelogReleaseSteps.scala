@@ -76,7 +76,7 @@ object ChangelogReleaseSteps {
     }
   }
 
-  private def updateChangelog(info: ChangelogInfo, st: State) {
+  private def updateChangelog(info: ChangelogInfo, st: State): Unit = {
     try {
       val oldChangelog = Source.fromFile(changelog).mkString
       val theVersion = getReleasedVersion(st)
@@ -97,7 +97,7 @@ object ChangelogReleaseSteps {
     }
   }
 
-  private def commitChangelog(st: State) {
+  private def commitChangelog(st: State): Unit = {
     try {
       val vcs = Project.extract(st).get(versionControlSystem).getOrElse(
         sys.error("Aborting release. Working directory is not a repository of a recognized VCS."))
