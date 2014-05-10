@@ -1,11 +1,13 @@
-import com.typesafe.sbt.SbtGhPages.ghpages
-import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
-import com.typesafe.sbt.SbtGit.git
-import com.typesafe.sbt.SbtSite.site
+import com.typesafe.sbt.SbtSite.SiteKeys._
 import sbt._
-import sbt.Keys._
-import sbtrelease._
+import Keys._
 import sbtunidoc.Plugin._
+import com.typesafe.sbt.SbtSite._
+import com.typesafe.sbt.SbtGit._
+import GitKeys._
+import com.typesafe.sbt.SbtGhPages._
+import GhPagesKeys._
+import sbtrelease._
 import scala.io.Source
 import net.virtualvoid.sbt.graph.Plugin
 import org.scalastyle.sbt.ScalastylePlugin
@@ -14,6 +16,7 @@ import JacocoPlugin._
 import ReleaseStateTransformations._
 import ReleasePlugin._
 import ReleaseKeys._
+import scala.Some
 
 object BuildSettings {
   import AdditionalReleaseSteps._
@@ -32,8 +35,18 @@ object BuildSettings {
     unidocSettings ++
     Seq(
       ghpagesNoJekyll := false,
-      site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
-      git.remoteRepo := "https://github.paypal.com/Customers-R/sbt-build-utilities.git"
+      siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version) map { (m, v) =>
+        for((f, d) <- m) yield (f, ("api/"+v+"/"+d))
+      },
+      synchLocal <<= (privateMappings, updatedRepository, gitRunner, streams) map { (mappings, repo, git, s) =>
+        val betterMappings = mappings map { case (file, target) => (file, repo / target) }
+        IO.copy(betterMappings)
+        repo
+      },
+      git.remoteRepo := "https://github.paypal.com/Customers-R/sbt-build-utilities.git",
+      releaseProcess := Seq[ReleaseStep](
+        Release.generateAndPushDocs
+      )
     )
 
   lazy val standardSettings = standardPluginSettings ++ Seq(
@@ -63,7 +76,9 @@ object BuildSettings {
       val stingrayNexus = s"$stingrayNexusHost/nexus/content/repositories/"
       val publishFolder = if(version.trim.endsWith("SNAPSHOT")) "snapshots" else "releases"
       Some(publishFolder at stingrayNexus + s"$publishFolder/")
-    },
+    }
+  // TODO add push site stuff to release process
+  /*
     releaseProcess := Seq[ReleaseStep](
       checkSnapshotDependencies,
       inquireVersions,
@@ -78,6 +93,26 @@ object BuildSettings {
       pushChanges
     )
   )
+  */
+  )
+}
+
+object Release {
+  lazy val generateAndPushDocs: ReleaseStep = { st: State =>
+    val st2 = executeStepTask(makeSite, "Making the site")(st)
+    executeStepTask(pushSite, "Publishing the site")(st2)
+  }
+
+  private def executeStepTask(task: TaskKey[_], info: String) = ReleaseStep { st: State =>
+    executeTask(task, info)(st)
+  }
+
+  private def executeTask(task: TaskKey[_], info: String) = (st: State) => {
+    st.log.info(info)
+    val extracted = Project.extract(st)
+    val ref: ProjectRef = extracted.get(thisProjectRef)
+    extracted.runTask(task in ref, st)._1
+  }
 }
 
 object UtilitiesBuild extends Build {

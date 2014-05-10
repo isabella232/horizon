@@ -9,7 +9,11 @@ import sbtunidoc.Plugin._
 import com.typesafe.sbt.SbtGhPages.ghpages
 import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
-import com.typesafe.sbt.SbtGit.git
+import com.typesafe.sbt.SbtGit._
+import com.typesafe.sbt.SbtGit.GitKeys._
+import com.typesafe.sbt.SbtSite
+import com.typesafe.sbt.SbtSite.SiteKeys._
+import sbtrelease.ReleasePlugin.ReleaseKeys._
 
 
 /**
@@ -68,9 +72,14 @@ object BuildUtilities extends GitInfo {
     pushChanges
   )
 
-  private val repo = (new FileRepositoryBuilder).findGitDir.build
-  private val originUrl = repo.getConfig.getString("remote", "origin", "url")
+  lazy private val gitDir = new File(".", ".git")
+  lazy private val repo = new FileRepositoryBuilder().setGitDir(gitDir)
+    .readEnvironment() // scan environment GIT_* variables
+    .findGitDir() // scan up the file system tree
+    .build()
+  lazy private val originUrl = repo.getConfig.getString("remote", "origin", "url")
 
+  // TODO revise
   /**
    * Settings val which provides all settings to generate and publish project documentation to the gh-pages branch of the repository.
    *
@@ -104,11 +113,26 @@ object BuildUtilities extends GitInfo {
    * Alternatively, the `defaultReleaseProcess` using [[sbtrelease]] will automatically generate and push docs,
    * provided `docSettings` is included in the build settings.
    */
-  lazy val docSettings: Seq[Setting[_]] = site.settings ++ ghpages.settings ++ unidocSettings ++ Seq(
-    ghpagesNoJekyll := false,
-    site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
-    git.remoteRepo := originUrl
+  lazy val docSettings: Seq[Setting[_]] =
+    unidocSettings ++
+    ghpages.settings ++
+    site.settings ++ Seq(
+      gitRemoteRepo := originUrl,
+      ghpagesNoJekyll := false,
+      siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version) map { (m, v) =>
+        for((f, d) <- m) yield (f, ("api/"+v+"/"+d))
+      },
+      synchLocal <<= (privateMappings, updatedRepository, gitRunner, streams) map { (mappings, repo, git, s) =>
+        val betterMappings = mappings map { case (file, target) => (file, repo / target) }
+        IO.copy(betterMappings)
+        repo
+      }
+    )
+
+  lazy val testReleaseProcess = Seq[ReleaseStep](
+    ScaladocReleaseSteps.generateAndPushDocs
   )
+
 }
 
 
