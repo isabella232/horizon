@@ -18,14 +18,15 @@ import com.typesafe.sbt.SbtSite.SiteKeys._
 object ScaladocReleaseSteps {
 
   lazy val generateAndPushDocs: ReleaseStep = { st: State =>
-    val st2 = executeTask(makeSite, "Making the doc site")(st)
-    executeTask(pushSite, "Publishing the doc site")(st2)
+    val st2 = executeTask(makeSite, "Making doc site")(st)
+    executeTask(pushSite, "Publishing doc site")(st2)
   }
 
   private def executeTask(task: TaskKey[_], info: String) = (st: State) => {
     st.log.info(info)
     val extracted = Project.extract(st)
     val ref: ProjectRef = extracted.get(thisProjectRef)
-    extracted.runTask(task in ref, st)._1
+    val (newState, _) = extracted.runTask(task in ref, st)
+    newState
   }
 }

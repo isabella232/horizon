@@ -68,12 +68,12 @@ object BuildUtilities extends GitInfo {
     pushChanges
   )
 
-  lazy private val gitDir = new File(".", ".git")
-  lazy private val repo = new FileRepositoryBuilder().setGitDir(gitDir)
+  private val gitDir = new File(".", ".git")
+  private val repo = new FileRepositoryBuilder().setGitDir(gitDir)
     .readEnvironment() // scan environment GIT_* variables
     .findGitDir() // scan up the file system tree
     .build()
-  lazy private val originUrl = repo.getConfig.getString("remote", "origin", "url")
+  private val originUrl = repo.getConfig.getString("remote", "origin", "url")
 
   /**
    * Settings val which provides all settings to generate and publish project documentation to the gh-pages branch of the repository.
@@ -124,20 +124,15 @@ object BuildUtilities extends GitInfo {
     site.settings ++ Seq(
       gitRemoteRepo := originUrl,
       ghpagesNoJekyll := false,
-      siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version) map { (m, v) =>
-        for((f, d) <- m) yield (f, ("api/"+v+"/"+d))
+      siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version).map { (mapping, ver) =>
+        for((file, path) <- mapping) yield (file, (s"api/$ver/$path"))
       },
-      synchLocal <<= (privateMappings, updatedRepository, gitRunner, streams) map { (mappings, repo, git, s) =>
-        val betterMappings = mappings map { case (file, target) => (file, repo / target) }
+      synchLocal <<= (privateMappings, updatedRepository, gitRunner, streams).map { (mappings, repo, git, s) =>
+        val betterMappings = mappings.map { case (file, target) => (file, repo / target) }
         IO.copy(betterMappings)
         repo
       }
     )
-
-  lazy val testReleaseProcess = Seq[ReleaseStep](
-    ScaladocReleaseSteps.generateAndPushDocs
-  )
-
 }
 
 

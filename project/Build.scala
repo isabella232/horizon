@@ -24,12 +24,12 @@ object BuildSettings {
   val org = "com.paypal.stingray"
   val scalaVsn = "2.10.4"
   val stingrayNexusHost = "http://stingray-nexus.stratus.dev.ebay.com"
-  lazy private val gitDir = new File(".", ".git")
-  lazy private val repo = new FileRepositoryBuilder().setGitDir(gitDir)
+  private val gitDir = new File(".", ".git")
+  private val repo = new FileRepositoryBuilder().setGitDir(gitDir)
     .readEnvironment() // scan environment GIT_* variables
     .findGitDir() // scan up the file system tree
     .build()
-  lazy private val originUrl = repo.getConfig.getString("remote", "origin", "url")
+  private val originUrl = repo.getConfig.getString("remote", "origin", "url")
 
   lazy val standardPluginSettings = Defaults.defaultSettings ++
     releaseSettings ++
@@ -41,11 +41,11 @@ object BuildSettings {
     unidocSettings ++
     Seq(
       ghpagesNoJekyll := false,
-      siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version) map { (m, v) =>
-        for((f, d) <- m) yield (f, ("api/"+v+"/"+d))
+      siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version).map { (mapping, ver) =>
+        for((file, path) <- mapping) yield (file, (s"api/$ver/$path"))
       },
-      synchLocal <<= (privateMappings, updatedRepository, gitRunner, streams) map { (mappings, repo, git, s) =>
-        val betterMappings = mappings map { case (file, target) => (file, repo / target) }
+      synchLocal <<= (privateMappings, updatedRepository, gitRunner, streams).map { (mappings, repo, git, s) =>
+        val betterMappings = mappings.map { case (file, target) => (file, repo / target) }
         IO.copy(betterMappings)
         repo
       },
@@ -138,15 +138,16 @@ object AdditionalReleaseSteps {
   }
 
   lazy val generateAndPushDocs: ReleaseStep = { st: State =>
-    val st2 = executeTask(makeSite, "Making the doc site")(st)
-    executeTask(pushSite, "Publishing the doc site")(st2)
+    val st2 = executeTask(makeSite, "Making doc site")(st)
+    executeTask(pushSite, "Publishing doc site")(st2)
   }
 
   private def executeTask(task: TaskKey[_], info: String) = (st: State) => {
     st.log.info(info)
     val extracted = Project.extract(st)
     val ref: ProjectRef = extracted.get(thisProjectRef)
-    extracted.runTask(task in ref, st)._1
+    val (newState, _) = extracted.runTask(task in ref, st)
+    newState
   }
 
 }
