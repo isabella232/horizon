@@ -42,16 +42,16 @@ object BuildUtilities extends GitInfo {
    * Process order:
    * 1. checkSnapshotDependencies - checks dependencies
    * 2. inquireVersions - gets release version and figures out next version
-   * 3. ChangelogReleaseSteps.checkForChangelog - checks that system properties
+   * 3. checkForChangelog - checks that system properties
    *    changelog.msg and changelog.author have been set
    * 4. runTest - run tests
    * 5. setReleaseVersion - sets the release version (removes the SNAPSHOT part)
    * 6. commitReleaseVersion - commits the release version
-   * 7. ChangelogReleaseSteps.updateChangelog - updates the changelog entry for this
+   * 7. updateChangelog - updates the changelog entry for this
    *    release version and commits the change
    * 8. tagRelease - tags the release
    * 9. publishArtifacts - publishes artifacts to specified location
-   * 10. generateAndPushDocs - generates Scaladocs and pushes changes to the gh-pages branch
+   * 10. generateAndPushDocs - generates Scaladocs and pushes to the gh-pages branch
    * 11. setNextVersion - sets the next snapshot version
    * 12. commitNextVersion - commits the next snapshot version
    * 13. pushChanges - pushes all commits created by this process
@@ -79,11 +79,17 @@ object BuildUtilities extends GitInfo {
     .build()
   lazy private val originUrl = repo.getConfig.getString("remote", "origin", "url")
 
-  // TODO revise
   /**
    * Settings val which provides all settings to generate and publish project documentation to the gh-pages branch of the repository.
    *
-   * Combines sbt-site, sbt-unidoc and custom ghpages settings. Customize settings in your project's build file as needed.
+   * Combines sbt-unidoc, sbt-site, and ghpages settings. Also sets the following additional settings:
+   *
+   * gitRemoteRepo (sbt-git) is set to current remote origin, extracted using sbt-git.
+   * ghpagesNoJekyll (sbt-ghpages) is set to false
+   * siteMappings (sbt-site) is overridden to create a folder structure like /api/$version
+   * synchLocal (sbt-ghpages) is overridden so older docs are not deleted
+   *
+   * Customize settings in your project's build file as needed. For example, look at unidoc settings to exclude aggregate projects from the docs.
    *
    * sbt-site provides commands to create a project site for publishing,
    * and includes commands for auto doc generation. [[https://github.com/sbt/sbt-site]]
@@ -92,6 +98,8 @@ object BuildUtilities extends GitInfo {
    * See docs for how to exclude projects if needed. [[https://github.com/sbt/sbt-unidoc]]
    *
    * ghpages provides commands to easily push a created "site" to the gh-pages branch of the repository. [[https://github.com/sbt/sbt-ghpages]]
+   *
+   * To use:
    *
    * Add `docSettings` to the root project's settings. For example:
    *
@@ -104,14 +112,15 @@ object BuildUtilities extends GitInfo {
    *   )
    * }}}
    *
-   * To generate and push docs, run the following sbt command:
+   * Provided you have included `docSettings` in your root project's build settings, the `defaultReleaseProcess` using [[sbtrelease]]
+   * includes a step to generate and push docs.
+   *
+   * To manually create, run the following sbt command:
    *
    * {{{
-   *   sbt ghpages-push-site
+   *   sbt unidoc make-site ghpages-push-site
    * }}}
    *
-   * Alternatively, the `defaultReleaseProcess` using [[sbtrelease]] will automatically generate and push docs,
-   * provided `docSettings` is included in the build settings.
    */
   lazy val docSettings: Seq[Setting[_]] =
     unidocSettings ++

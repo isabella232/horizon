@@ -13,17 +13,13 @@ import com.typesafe.sbt.SbtSite.SiteKeys._
  * Includes a release step `generateAndPushDocs` for [[sbtrelease]] to generate Scaladocs
  * using sbt-unidoc and sbt-site, followed by pushing them to the gh-pages branch of the current project's repository.
  *
- * Depends on adding `docSettings` to project build settings.
+ * Depends on adding `docSettings` to root project build settings.
  */
 object ScaladocReleaseSteps {
 
   lazy val generateAndPushDocs: ReleaseStep = { st: State =>
-    val st2 = executeStepTask(makeSite, "Making the site")(st)
-    executeStepTask(pushSite, "Publishing the site")(st2)
-  }
-
-  private def executeStepTask(task: TaskKey[_], info: String) = ReleaseStep { st: State =>
-    executeTask(task, info)(st)
+    val st2 = executeTask(makeSite, "Making the doc site")(st)
+    executeTask(pushSite, "Publishing the doc site")(st2)
   }
 
   private def executeTask(task: TaskKey[_], info: String) = (st: State) => {
