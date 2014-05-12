@@ -1,4 +1,5 @@
 import com.typesafe.sbt.SbtSite.SiteKeys._
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import sbt._
 import Keys._
 import sbtunidoc.Plugin._
@@ -23,6 +24,12 @@ object BuildSettings {
   val org = "com.paypal.stingray"
   val scalaVsn = "2.10.4"
   val stingrayNexusHost = "http://stingray-nexus.stratus.dev.ebay.com"
+  lazy private val gitDir = new File(".", ".git")
+  lazy private val repo = new FileRepositoryBuilder().setGitDir(gitDir)
+    .readEnvironment() // scan environment GIT_* variables
+    .findGitDir() // scan up the file system tree
+    .build()
+  lazy private val originUrl = repo.getConfig.getString("remote", "origin", "url")
 
   lazy val standardPluginSettings = Defaults.defaultSettings ++
     releaseSettings ++
@@ -42,7 +49,7 @@ object BuildSettings {
         IO.copy(betterMappings)
         repo
       },
-      git.remoteRepo := "https://github.paypal.com/Customers-R/sbt-build-utilities.git"
+      git.remoteRepo := originUrl
     )
 
   lazy val standardSettings = standardPluginSettings ++ Seq(
