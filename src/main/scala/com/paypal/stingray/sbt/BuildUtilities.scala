@@ -9,12 +9,8 @@ import sbtunidoc.Plugin._
 import com.typesafe.sbt.SbtGhPages.ghpages
 import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
-import com.typesafe.sbt.SbtGit._
 import com.typesafe.sbt.SbtGit.GitKeys._
-import com.typesafe.sbt.SbtSite
 import com.typesafe.sbt.SbtSite.SiteKeys._
-import sbtrelease.ReleasePlugin.ReleaseKeys._
-
 
 /**
  * Primary plugin object used to access all major build utilities.
