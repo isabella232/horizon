@@ -92,7 +92,7 @@ object BuildUtilities extends GitInfo {
    * 1. Remove the .git
    * 2. Replace all colons with forward slashes
    * 3. Split the str by the / character
-   * 4. Tie together the last two elements of the resulting array to extract the structure $username/$repo-name
+   * 4. Concat the last two elements of the resulting array with a forward slash and return $username/$repo-name
    */
   private def extractDirStructure(str: String): String = {
     val gitRemoved = str.replace(".git", "")

@@ -42,7 +42,6 @@ object BuildSettings {
     val split = colonsReplaced.split('/')
     val repoName = split(split.length - 1)
     val username = split(split.length - 2)
-    println("REPO IS " + s"$username/$repoName")
     s"$username/$repoName"
   }
 
