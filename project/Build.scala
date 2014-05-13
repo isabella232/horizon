@@ -1,3 +1,4 @@
+import com.typesafe.sbt.SbtGhPages
 import com.typesafe.sbt.SbtSite.SiteKeys._
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import sbt._
@@ -18,8 +19,13 @@ import ReleaseStateTransformations._
 import ReleasePlugin._
 import ReleaseKeys._
 
+object BuildUtilitiesKeys {
+  lazy val ghpagesDir = SettingKey[String]("build-utilities-ghpages-directory", "unique folder structure for the git project gh-pages branch")
+}
+
 object BuildSettings {
   import AdditionalReleaseSteps._
+  import BuildUtilitiesKeys._
 
   val org = "com.paypal.stingray"
   val scalaVsn = "2.10.4"
@@ -30,6 +36,15 @@ object BuildSettings {
     .findGitDir() // scan up the file system tree
     .build()
   private val originUrl = repo.getConfig.getString("remote", "origin", "url")
+  private def extractDirStructure(str: String): String = {
+    val gitRemoved = str.replace(".git", "")
+    val colonsReplaced = gitRemoved.replace(":", "/")
+    val split = colonsReplaced.split('/')
+    val repoName = split(split.length - 1)
+    val username = split(split.length - 2)
+    println("REPO IS " + s"$username/$repoName")
+    s"$username/$repoName"
+  }
 
   lazy val standardPluginSettings = Defaults.defaultSettings ++
     releaseSettings ++
@@ -41,6 +56,8 @@ object BuildSettings {
     unidocSettings ++
     Seq(
       ghpagesNoJekyll := false,
+      ghpagesDir := extractDirStructure(originUrl),
+      repository <<= (organization, ghpagesDir).apply ((org, dir) => file(System.getProperty("user.home")) / ".sbt" / "ghpages" / org / dir),
       siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version).map { (mapping, ver) =>
         for((file, path) <- mapping) yield (file, (s"api/$ver/$path"))
       },

@@ -12,6 +12,10 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import com.typesafe.sbt.SbtGit.GitKeys._
 import com.typesafe.sbt.SbtSite.SiteKeys._
 
+object BuildUtilitiesKeys {
+  lazy val ghpagesDir = SettingKey[String]("build-utilities-ghpages-directory", "unique folder structure for the git project gh-pages branch")
+}
+
 /**
  * Primary plugin object used to access all major build utilities.
  * To access add the following import statement:
@@ -22,6 +26,8 @@ import com.typesafe.sbt.SbtSite.SiteKeys._
  *
  */
 object BuildUtilities extends GitInfo {
+
+  import BuildUtilitiesKeys._
 
   /**
    * Default release process for projects,
@@ -76,6 +82,28 @@ object BuildUtilities extends GitInfo {
   private val originUrl = repo.getConfig.getString("remote", "origin", "url")
 
   /**
+   * Format of str will either be
+   *
+   * https://github.paypal.com/$username/$repo-name.git, or
+   * git@github.paypal.com:$username/$repo-name.git
+   *
+   * To get the directory structure, we:
+   *
+   * 1. Remove the .git
+   * 2. Replace all colons with forward slashes
+   * 3. Split the str by the / character
+   * 4. Tie together the last two elements of the resulting array to extract the structure $username/$repo-name
+   */
+  private def extractDirStructure(str: String): String = {
+    val gitRemoved = str.replace(".git", "")
+    val colonsReplaced = gitRemoved.replace(":", "/")
+    val split = colonsReplaced.split('/')
+    val repoName = split(split.length - 1)
+    val username = split(split.length - 2)
+    s"$username/$repoName"
+  }
+
+  /**
    * Settings val which provides all settings to generate and publish project documentation to the gh-pages branch of the repository.
    *
    * Combines sbt-unidoc, sbt-site, and ghpages settings. Also sets the following additional settings:
@@ -84,6 +112,8 @@ object BuildUtilities extends GitInfo {
    * ghpagesNoJekyll (sbt-ghpages) is set to false
    * siteMappings (sbt-site) is overridden to create a folder structure like /api/$version
    * synchLocal (sbt-ghpages) is overridden so older docs are not deleted
+   * repository (sbt-ghpages) is overridden to clone the repo's gh-pages branch into a directory structure of the form:
+   *   ~/.sbt/ghpages/$organization/$username/$repo-name
    *
    * Customize settings in your project's build file as needed. For example, look at unidoc settings to exclude aggregate projects from the docs.
    *
@@ -124,6 +154,8 @@ object BuildUtilities extends GitInfo {
     site.settings ++ Seq(
       gitRemoteRepo := originUrl,
       ghpagesNoJekyll := false,
+      ghpagesDir := extractDirStructure(originUrl),
+      repository <<= (organization, ghpagesDir).apply ((org, dir) => file(System.getProperty("user.home")) / ".sbt" / "ghpages" / org / dir),
       siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version).map { (mapping, ver) =>
         for((file, path) <- mapping) yield (file, (s"api/$ver/$path"))
       },
