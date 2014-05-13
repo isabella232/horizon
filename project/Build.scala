@@ -1,4 +1,3 @@
-import com.typesafe.sbt.SbtGhPages
 import com.typesafe.sbt.SbtSite.SiteKeys._
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import sbt._
