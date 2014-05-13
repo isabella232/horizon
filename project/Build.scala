@@ -107,7 +107,7 @@ object UtilitiesBuild extends Build {
 
 /**
  * Adds step to ensure an entry for the current release version is present in the changelog,
- * and generate and push scaladocs to gh-pages branch.
+ * and generate and push ScalaDocs to gh-pages branch.
  */
 object AdditionalReleaseSteps {
 

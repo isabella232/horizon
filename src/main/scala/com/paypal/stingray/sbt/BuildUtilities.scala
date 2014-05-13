@@ -47,7 +47,7 @@ object BuildUtilities extends GitInfo {
    *    release version and commits the change
    * 8. tagRelease - tags the release
    * 9. publishArtifacts - publishes artifacts to specified location
-   * 10. generateAndPushDocs - generates Scaladocs and pushes to the gh-pages branch
+   * 10. generateAndPushDocs - generates ScalaDocs and pushes to the gh-pages branch
    * 11. setNextVersion - sets the next snapshot version
    * 12. commitNextVersion - commits the next snapshot version
    * 13. pushChanges - pushes all commits created by this process
