@@ -49,7 +49,22 @@ object BuildSettings {
         IO.copy(betterMappings)
         repo
       },
-      git.remoteRepo := originUrl
+      git.remoteRepo := originUrl,
+      tagName <<= (version in ThisBuild).map(a => a),
+      releaseProcess := Seq[ReleaseStep](
+        checkSnapshotDependencies,
+        inquireVersions,
+        ensureChangelogEntry,
+        runTest,
+        setReleaseVersion,
+        commitReleaseVersion,
+        tagRelease,
+        publishArtifacts,
+        generateAndPushDocs,
+        setNextVersion,
+        commitNextVersion,
+        pushChanges
+      )
     )
 
   lazy val standardSettings = standardPluginSettings ++ Seq(
@@ -79,21 +94,7 @@ object BuildSettings {
       val stingrayNexus = s"$stingrayNexusHost/nexus/content/repositories/"
       val publishFolder = if(version.trim.endsWith("SNAPSHOT")) "snapshots" else "releases"
       Some(publishFolder at stingrayNexus + s"$publishFolder/")
-    },
-    releaseProcess := Seq[ReleaseStep](
-      checkSnapshotDependencies,
-      inquireVersions,
-      ensureChangelogEntry,
-      runTest,
-      setReleaseVersion,
-      commitReleaseVersion,
-      tagRelease,
-      publishArtifacts,
-      generateAndPushDocs,
-      setNextVersion,
-      commitNextVersion,
-      pushChanges
-    )
+    }
   )
 }
 
