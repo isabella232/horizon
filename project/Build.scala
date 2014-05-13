@@ -39,10 +39,10 @@ object BuildSettings {
   private def extractDirStructure(str: String): String = {
     val gitRemoved = str.replace(".git", "")
     val colonsReplaced = gitRemoved.replace(":", "/")
-    val split = colonsReplaced.split('/')
-    val repoName = split(split.length - 1)
-    val username = split(split.length - 2)
-    s"$username/$repoName"
+    val splitStr = colonsReplaced.split('/')
+    val repo = splitStr(splitStr.length - 1)
+    val name = splitStr(splitStr.length - 2)
+    s"$name/$repo"
   }
 
   lazy val standardPluginSettings = Defaults.defaultSettings ++
@@ -56,7 +56,7 @@ object BuildSettings {
     Seq(
       ghpagesNoJekyll := false,
       ghpagesDir := extractDirStructure(originUrl),
-      repository <<= (organization, ghpagesDir).apply ((org, dir) => file(System.getProperty("user.home")) / ".sbt" / "ghpages" / org / dir),
+      repository <<= ghpagesDir.apply (dir => file(System.getProperty("user.home")) / ".sbt" / "ghpages" / dir),
       siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version).map { (mapping, ver) =>
         for((file, path) <- mapping) yield (file, (s"api/$ver/$path"))
       },

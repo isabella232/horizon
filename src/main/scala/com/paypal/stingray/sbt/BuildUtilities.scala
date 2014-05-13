@@ -84,23 +84,25 @@ object BuildUtilities extends GitInfo {
   /**
    * Format of str will either be
    *
-   * https://github.paypal.com/$username/$repo-name.git, or
-   * git@github.paypal.com:$username/$repo-name.git
+   * https://github.paypal.com/$name/$repo.git, or
+   * git@github.paypal.com:$name/$repo.git,
+   *
+   * where $name is the individual or organization.
    *
    * To get the directory structure, we:
    *
    * 1. Remove the .git
    * 2. Replace all colons with forward slashes
    * 3. Split the str by the / character
-   * 4. Concat the last two elements of the resulting array with a forward slash and return $username/$repo-name
+   * 4. Concat the last two elements of the resulting array with a forward slash and return $name/$repo
    */
   private def extractDirStructure(str: String): String = {
     val gitRemoved = str.replace(".git", "")
     val colonsReplaced = gitRemoved.replace(":", "/")
-    val split = colonsReplaced.split('/')
-    val repoName = split(split.length - 1)
-    val username = split(split.length - 2)
-    s"$username/$repoName"
+    val splitStr = colonsReplaced.split('/')
+    val repo = splitStr(splitStr.length - 1)
+    val name = splitStr(splitStr.length - 2)
+    s"$name/$repo"
   }
 
   /**
@@ -155,7 +157,7 @@ object BuildUtilities extends GitInfo {
       gitRemoteRepo := originUrl,
       ghpagesNoJekyll := false,
       ghpagesDir := extractDirStructure(originUrl),
-      repository <<= (organization, ghpagesDir).apply ((org, dir) => file(System.getProperty("user.home")) / ".sbt" / "ghpages" / org / dir),
+      repository <<= ghpagesDir.apply (dir => file(System.getProperty("user.home")) / ".sbt" / "ghpages" / dir),
       siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version).map { (mapping, ver) =>
         for((file, path) <- mapping) yield (file, (s"api/$ver/$path"))
       },
