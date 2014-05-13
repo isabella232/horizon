@@ -1,5 +1,13 @@
+import com.typesafe.sbt.SbtSite.SiteKeys._
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import sbt._
-import sbt.Keys._
+import Keys._
+import sbtunidoc.Plugin._
+import com.typesafe.sbt.SbtSite._
+import com.typesafe.sbt.SbtGit._
+import GitKeys._
+import com.typesafe.sbt.SbtGhPages._
+import GhPagesKeys._
 import sbtrelease._
 import scala.io.Source
 import net.virtualvoid.sbt.graph.Plugin
@@ -16,8 +24,48 @@ object BuildSettings {
   val org = "com.paypal.stingray"
   val scalaVsn = "2.10.4"
   val stingrayNexusHost = "http://stingray-nexus.stratus.dev.ebay.com"
+  private val gitDir = new File(".", ".git")
+  private val repo = new FileRepositoryBuilder().setGitDir(gitDir)
+    .readEnvironment() // scan environment GIT_* variables
+    .findGitDir() // scan up the file system tree
+    .build()
+  private val originUrl = repo.getConfig.getString("remote", "origin", "url")
 
-  lazy val standardPluginSettings = Defaults.defaultSettings ++ releaseSettings ++ Plugin.graphSettings ++ ScalastylePlugin.Settings ++ jacoco.settings
+  lazy val standardPluginSettings = Defaults.defaultSettings ++
+    releaseSettings ++
+    Plugin.graphSettings ++
+    ScalastylePlugin.Settings ++
+    jacoco.settings ++
+    site.settings ++
+    ghpages.settings ++
+    unidocSettings ++
+    Seq(
+      ghpagesNoJekyll := false,
+      siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version).map { (mapping, ver) =>
+        for((file, path) <- mapping) yield (file, (s"api/$ver/$path"))
+      },
+      synchLocal <<= (privateMappings, updatedRepository, gitRunner, streams).map { (mappings, repo, git, s) =>
+        val betterMappings = mappings.map { case (file, target) => (file, repo / target) }
+        IO.copy(betterMappings)
+        repo
+      },
+      git.remoteRepo := originUrl,
+      tagName <<= (version in ThisBuild).map(a => a),
+      releaseProcess := Seq[ReleaseStep](
+        checkSnapshotDependencies,
+        inquireVersions,
+        ensureChangelogEntry,
+        runTest,
+        setReleaseVersion,
+        commitReleaseVersion,
+        tagRelease,
+        publishArtifacts,
+        generateAndPushDocs,
+        setNextVersion,
+        commitNextVersion,
+        pushChanges
+      )
+    )
 
   lazy val standardSettings = standardPluginSettings ++ Seq(
     organization := org,
@@ -29,30 +77,24 @@ object BuildSettings {
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     scalacOptions in Test ++= Seq("-Yrangepos"),
     resolvers += "Stingray Nexus" at s"$stingrayNexusHost/nexus/content/groups/public/",
-    dependencyOverrides <+= scalaVersion { vsn => "org.scala-lang" % "scala-library" % vsn },
+    dependencyOverrides <++= scalaVersion { vsn => Set(
+      "org.scala-lang" % "scala-library"  % vsn,
+      "org.scala-lang" % "scala-compiler" % vsn
+    )},
     addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.2"),
+    addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.2" exclude("com.typesafe.sbt", "sbt-git")),
+    addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.7.0"),
+    addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.6.5-stingray"),
+    addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.0"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit" % "org.eclipse.jgit" % "3.3.0.201403021825-r",
-      "org.specs2" %% "specs2" % "2.3.8" % "test"
+      "org.specs2" %% "specs2" % "2.3.11" % "test"
     ),
-    publishTo <<= (version) { version: String =>
+    publishTo <<= version { version: String =>
       val stingrayNexus = s"$stingrayNexusHost/nexus/content/repositories/"
       val publishFolder = if(version.trim.endsWith("SNAPSHOT")) "snapshots" else "releases"
       Some(publishFolder at stingrayNexus + s"$publishFolder/")
-    },
-    releaseProcess := Seq[ReleaseStep](
-      checkSnapshotDependencies,
-      inquireVersions,
-      ensureChangelogEntry,
-      runTest,
-      setReleaseVersion,
-      commitReleaseVersion,
-      tagRelease,
-      publishArtifacts,
-      setNextVersion,
-      commitNextVersion,
-      pushChanges
-    )
+    }
   )
 }
 
@@ -63,7 +105,10 @@ object UtilitiesBuild extends Build {
 
 }
 
-// Adds step to ensure an entry for the current release version is present in the changelog
+/**
+ * Adds step to ensure an entry for the current release version is present in the changelog,
+ * and generate and push scaladocs to gh-pages branch.
+ */
 object AdditionalReleaseSteps {
 
   lazy val ensureChangelogEntry: ReleaseStep = { st: State =>
@@ -91,6 +136,19 @@ object AdditionalReleaseSteps {
     } catch {
       case e: Throwable => throw new ChangelogEntryMissingException(e)
     }
+  }
+
+  lazy val generateAndPushDocs: ReleaseStep = { st: State =>
+    val st2 = executeTask(makeSite, "Making doc site")(st)
+    executeTask(pushSite, "Publishing doc site")(st2)
+  }
+
+  private def executeTask(task: TaskKey[_], info: String) = (st: State) => {
+    st.log.info(info)
+    val extracted = Project.extract(st)
+    val ref: ProjectRef = extracted.get(thisProjectRef)
+    val (newState, _) = extracted.runTask(task in ref, st)
+    newState
   }
 
 }
