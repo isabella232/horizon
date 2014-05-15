@@ -10,7 +10,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import com.typesafe.sbt.SbtSite.SiteKeys._
 
 /**
- * Includes a release step `generateAndPushDocs` for [[sbtrelease]] to generate Scaladocs
+ * Includes a release step `generateAndPushDocs` for [[sbtrelease]] to generate ScalaDocs
  * using sbt-unidoc and sbt-site, followed by pushing them to the gh-pages branch of the current project's repository.
  *
  * Depends on adding `docSettings` to root project build settings.

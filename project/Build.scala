@@ -18,8 +18,13 @@ import ReleaseStateTransformations._
 import ReleasePlugin._
 import ReleaseKeys._
 
+object BuildUtilitiesKeys {
+  lazy val ghpagesDir = SettingKey[String]("build-utilities-ghpages-directory", "unique folder structure for the git project gh-pages branch")
+}
+
 object BuildSettings {
   import AdditionalReleaseSteps._
+  import BuildUtilitiesKeys._
 
   val org = "com.paypal.stingray"
   val scalaVsn = "2.10.4"
@@ -30,6 +35,14 @@ object BuildSettings {
     .findGitDir() // scan up the file system tree
     .build()
   private val originUrl = repo.getConfig.getString("remote", "origin", "url")
+  private def extractDirStructure(str: String): String = {
+    val gitRemoved = str.replace(".git", "")
+    val colonsReplaced = gitRemoved.replace(":", "/")
+    val splitStr = colonsReplaced.split('/')
+    val repo = splitStr(splitStr.length - 1)
+    val name = splitStr(splitStr.length - 2)
+    s"$name/$repo"
+  }
 
   lazy val standardPluginSettings = Defaults.defaultSettings ++
     releaseSettings ++
@@ -41,6 +54,8 @@ object BuildSettings {
     unidocSettings ++
     Seq(
       ghpagesNoJekyll := false,
+      ghpagesDir := extractDirStructure(originUrl),
+      repository <<= ghpagesDir.apply (dir => file(System.getProperty("user.home")) / ".sbt" / "ghpages" / dir),
       siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version).map { (mapping, ver) =>
         for((file, path) <- mapping) yield (file, (s"api/$ver/$path"))
       },
@@ -107,7 +122,7 @@ object UtilitiesBuild extends Build {
 
 /**
  * Adds step to ensure an entry for the current release version is present in the changelog,
- * and generate and push scaladocs to gh-pages branch.
+ * and generate and push ScalaDocs to gh-pages branch.
  */
 object AdditionalReleaseSteps {
 

@@ -12,6 +12,10 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import com.typesafe.sbt.SbtGit.GitKeys._
 import com.typesafe.sbt.SbtSite.SiteKeys._
 
+object BuildUtilitiesKeys {
+  lazy val ghpagesDir = SettingKey[String]("build-utilities-ghpages-directory", "unique folder structure for the git project gh-pages branch")
+}
+
 /**
  * Primary plugin object used to access all major build utilities.
  * To access add the following import statement:
@@ -22,6 +26,8 @@ import com.typesafe.sbt.SbtSite.SiteKeys._
  *
  */
 object BuildUtilities extends GitInfo {
+
+  import BuildUtilitiesKeys._
 
   /**
    * Default release process for projects,
@@ -47,7 +53,7 @@ object BuildUtilities extends GitInfo {
    *    release version and commits the change
    * 8. tagRelease - tags the release
    * 9. publishArtifacts - publishes artifacts to specified location
-   * 10. generateAndPushDocs - generates Scaladocs and pushes to the gh-pages branch
+   * 10. generateAndPushDocs - generates ScalaDocs and pushes to the gh-pages branch
    * 11. setNextVersion - sets the next snapshot version
    * 12. commitNextVersion - commits the next snapshot version
    * 13. pushChanges - pushes all commits created by this process
@@ -76,6 +82,30 @@ object BuildUtilities extends GitInfo {
   private val originUrl = repo.getConfig.getString("remote", "origin", "url")
 
   /**
+   * Format of str will either be
+   *
+   * https://github.paypal.com/$name/$repo.git, or
+   * git@github.paypal.com:$name/$repo.git,
+   *
+   * where $name is the individual or organization.
+   *
+   * To get the directory structure, we:
+   *
+   * 1. Remove the .git
+   * 2. Replace all colons with forward slashes
+   * 3. Split the str by the / character
+   * 4. Concat the last two elements of the resulting array with a forward slash and return $name/$repo
+   */
+  private def extractDirStructure(str: String): String = {
+    val gitRemoved = str.replace(".git", "")
+    val colonsReplaced = gitRemoved.replace(":", "/")
+    val splitStr = colonsReplaced.split('/')
+    val repo = splitStr(splitStr.length - 1)
+    val name = splitStr(splitStr.length - 2)
+    s"$name/$repo"
+  }
+
+  /**
    * Settings val which provides all settings to generate and publish project documentation to the gh-pages branch of the repository.
    *
    * Combines sbt-unidoc, sbt-site, and ghpages settings. Also sets the following additional settings:
@@ -84,6 +114,8 @@ object BuildUtilities extends GitInfo {
    * ghpagesNoJekyll (sbt-ghpages) is set to false
    * siteMappings (sbt-site) is overridden to create a folder structure like /api/$version
    * synchLocal (sbt-ghpages) is overridden so older docs are not deleted
+   * repository (sbt-ghpages) is overridden to clone the repo's gh-pages branch into a directory structure of the form:
+   *   ~/.sbt/ghpages/$organization/$username/$repo-name
    *
    * Customize settings in your project's build file as needed. For example, look at unidoc settings to exclude aggregate projects from the docs.
    *
@@ -124,6 +156,8 @@ object BuildUtilities extends GitInfo {
     site.settings ++ Seq(
       gitRemoteRepo := originUrl,
       ghpagesNoJekyll := false,
+      ghpagesDir := extractDirStructure(originUrl),
+      repository <<= ghpagesDir.apply (dir => file(System.getProperty("user.home")) / ".sbt" / "ghpages" / dir),
       siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version).map { (mapping, ver) =>
         for((file, path) <- mapping) yield (file, (s"api/$ver/$path"))
       },
