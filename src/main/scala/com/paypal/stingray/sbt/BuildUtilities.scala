@@ -115,7 +115,7 @@ object BuildUtilities extends GitInfo {
    * siteMappings (sbt-site) is overridden to create a folder structure like /api/$version
    * synchLocal (sbt-ghpages) is overridden so older docs are not deleted
    * repository (sbt-ghpages) is overridden to clone the repo's gh-pages branch into a directory structure of the form:
-   *   ~/.sbt/ghpages/$organization/$username/$repo-name
+   *   ~/.sbt/ghpages/$name/$repo
    *
    * Customize settings in your project's build file as needed. For example, look at unidoc settings to exclude aggregate projects from the docs.
    *
