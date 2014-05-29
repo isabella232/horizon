@@ -179,7 +179,7 @@ object AdditionalReleaseSteps {
   }
 
   private def updateReadme(st: State, newVersion: String) {
-    val regex = """{{version}}""".r
+    val regex = """\{\{version\}\}""".r
     val oldReadme = Source.fromFile(readmeTemplate).mkString
     val out = new PrintWriter(readme, "UTF-8")
     try {
