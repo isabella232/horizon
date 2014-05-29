@@ -44,7 +44,7 @@ object BuildSettings {
     s"$name/$repo"
   }
 
-  lazy val standardPluginSettings = Defaults.defaultSettings ++
+  lazy val standardPluginSettings = Defaults.coreDefaultSettings ++
     releaseSettings ++
     Plugin.graphSettings ++
     ScalastylePlugin.Settings ++
