@@ -1,4 +1,5 @@
 import com.typesafe.sbt.SbtSite.SiteKeys._
+import java.io.PrintWriter
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import sbt._
 import Keys._
@@ -69,13 +70,14 @@ object BuildSettings {
       releaseProcess := Seq[ReleaseStep](
         checkSnapshotDependencies,
         inquireVersions,
-        ensureChangelogEntry,
-        runTest,
+        //ensureChangelogEntry,
+        //runTest,
         setReleaseVersion,
         commitReleaseVersion,
-        tagRelease,
-        publishArtifacts,
-        generateAndPushDocs,
+        setReadmeReleaseVersion,
+        //tagRelease,
+        //publishArtifacts,
+        //generateAndPushDocs,
         setNextVersion,
         commitNextVersion,
         pushChanges
@@ -164,6 +166,34 @@ object AdditionalReleaseSteps {
     val ref: ProjectRef = extracted.get(thisProjectRef)
     val (newState, _) = extracted.runTask(task in ref, st)
     newState
+  }
+
+  val readme = "README.md"
+  val readmeTemplate = "Readme-Template.md"
+
+  lazy val setReadmeReleaseVersion: ReleaseStep = { st: State =>
+    val version = getReleasedVersion(st)
+    updateReadme(st, version)
+    commitReadme(st, version)
+    st
+  }
+
+  private def updateReadme(st: State, newVersion: String) {
+    val regex = """{{version}}""".r
+    val oldReadme = Source.fromFile(readmeTemplate).mkString
+    val out = new PrintWriter(readme, "UTF-8")
+    try {
+      val newReadme = regex.replaceAllIn(oldReadme, "%s".format(newVersion))
+      newReadme.foreach(out.write(_))
+    } finally {
+      out.close()
+    }
+  }
+
+  private def commitReadme(st: State, newVersion: String) {
+    val vcs = Project.extract(st).get(versionControlSystem).getOrElse(sys.error("Unable to get version control system."))
+    vcs.add(readme) !! st.log
+    vcs.commit("README.md updated to %s".format(newVersion)) ! st.log
   }
 
 }
