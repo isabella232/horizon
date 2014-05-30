@@ -11,7 +11,7 @@ The Build Utilities plugin was designed so common build settings can be imported
 
 In **project/plugins.sbt**, add:
 
-`addSbtPlugin("com.paypal.stingray" % "sbt-build-utilities" % "current-version")`
+`addSbtPlugin("com.paypal.stingray" % "sbt-build-utilities" % "{{version}}")`
 
 In **project/Build.scala**, add:
 
