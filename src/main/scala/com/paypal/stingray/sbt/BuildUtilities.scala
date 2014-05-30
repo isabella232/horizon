@@ -26,14 +26,16 @@ object BuildUtilitiesKeys {
  *
  */
 object BuildUtilities extends GitInfo {
-
   import BuildUtilitiesKeys._
 
   /**
    * Default release process for projects,
    * uses sequence of release steps from [[https://github.com/sbt/sbt-release sbtrelease]]
    *
+   * Caveats:
+   *
    * Depends on adding `docSettings` to build settings in order to complete the `generateAndPushDocs` release step.
+   * Readme release step depends on `Readme-Template.md` file, from which the README.md file is produced.
    *
    * @example
    * {{{
@@ -51,6 +53,8 @@ object BuildUtilities extends GitInfo {
    * 6. commitReleaseVersion - commits the release version
    * 7. updateChangelog - updates the changelog entry for this
    *    release version and commits the change
+   * 8. setReadmeReleaseVersion - generates README.md file from Readme-Template.md, substituting
+   *    `{{version}}` for the release version.
    * 8. tagRelease - tags the release
    * 9. publishArtifacts - publishes artifacts to specified location
    * 10. generateAndPushDocs - generates ScalaDocs and pushes to the gh-pages branch
@@ -66,9 +70,22 @@ object BuildUtilities extends GitInfo {
     setReleaseVersion,
     commitReleaseVersion,
     ChangelogReleaseSteps.updateChangelog,
+    ReadmeReleaseSteps.setReadmeReleaseVersion,
     tagRelease,
     publishArtifacts,
     ScaladocReleaseSteps.generateAndPushDocs,
+    setNextVersion,
+    commitNextVersion,
+    pushChanges
+  )
+
+  lazy val testReleaseProcess = Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    runTest,
+    setReleaseVersion,
+    commitReleaseVersion,
+    ReadmeReleaseSteps.setReadmeReleaseVersion,
     setNextVersion,
     commitNextVersion,
     pushChanges

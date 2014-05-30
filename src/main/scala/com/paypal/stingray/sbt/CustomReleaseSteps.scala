@@ -120,10 +120,12 @@ object ChangelogReleaseSteps extends GetVersion {
 /**
  * Includes a release step `setReadmeReleaseVersion` which creates a README.md from the Readme-Template.md template.
  *
- * Currently, takes Readme-Template.md, replaces all instances of `{{version}}` with the current release version,
- * and creates README.md.
+ * Looks for a file named `Readme-Template.md`, replaces all instances of {{version}}` with the current release version,
+ * and creates `README.md`.
  *
- * Editing of the readme should happen on Readme-Template.md.
+ * Editing the content of the readme should happen via Readme-Template.md.
+ *
+ * If Readme-Template.md` does not exist, this step will fail.
  */
 object ReadmeReleaseSteps extends GetVersion {
 

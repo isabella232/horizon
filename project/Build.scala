@@ -124,7 +124,7 @@ object UtilitiesBuild extends Build {
 
 /**
  * Adds step to ensure an entry for the current release version is present in the changelog,
- * and generate and push ScalaDocs to gh-pages branch.
+ * generate and push ScalaDocs to gh-pages branch, and generate readme with release version injected.
  */
 object AdditionalReleaseSteps {
 
