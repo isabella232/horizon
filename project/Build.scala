@@ -70,14 +70,14 @@ object BuildSettings {
       releaseProcess := Seq[ReleaseStep](
         checkSnapshotDependencies,
         inquireVersions,
-        //ensureChangelogEntry,
-        //runTest,
+        ensureChangelogEntry,
+        runTest,
         setReleaseVersion,
         commitReleaseVersion,
-        setReadmeReleaseVersion,
-        //tagRelease,
-        //publishArtifacts,
-        //generateAndPushDocs,
+        generateReadme,
+        tagRelease,
+        publishArtifacts,
+        generateAndPushDocs,
         setNextVersion,
         commitNextVersion,
         pushChanges
@@ -171,26 +171,26 @@ object AdditionalReleaseSteps {
   val readme = "README.md"
   val readmeTemplate = "Readme-Template.md"
 
-  lazy val setReadmeReleaseVersion: ReleaseStep = { st: State =>
+  lazy val generateReadme: ReleaseStep = { st: State =>
     val version = getReleasedVersion(st)
-    updateReadme(st, version)
+    generateReadmeWithVersion(st, version)
     commitReadme(st, version)
     st
   }
 
-  private def updateReadme(st: State, newVersion: String) {
+  private def generateReadmeWithVersion(st: State, newVersion: String): Unit = {
     val regex = """\{\{version\}\}""".r
-    val oldReadme = Source.fromFile(readmeTemplate).mkString
+    val template = Source.fromFile(readmeTemplate).mkString
     val out = new PrintWriter(readme, "UTF-8")
     try {
-      val newReadme = regex.replaceAllIn(oldReadme, "%s".format(newVersion))
+      val newReadme = regex.replaceAllIn(template, "%s".format(newVersion))
       newReadme.foreach(out.write(_))
     } finally {
       out.close()
     }
   }
 
-  private def commitReadme(st: State, newVersion: String) {
+  private def commitReadme(st: State, newVersion: String): Unit = {
     val vcs = Project.extract(st).get(versionControlSystem).getOrElse(sys.error("Unable to get version control system."))
     vcs.add(readme) !! st.log
     vcs.commit("README.md updated to %s".format(newVersion)) ! st.log

@@ -53,7 +53,7 @@ object BuildUtilities extends GitInfo {
    * 6. commitReleaseVersion - commits the release version
    * 7. updateChangelog - updates the changelog entry for this
    *    release version and commits the change
-   * 8. setReadmeReleaseVersion - generates README.md file from Readme-Template.md, substituting
+   * 8. generateReadme - generates README.md file from Readme-Template.md, substituting
    *    `{{version}}` for the release version.
    * 8. tagRelease - tags the release
    * 9. publishArtifacts - publishes artifacts to specified location
@@ -70,22 +70,10 @@ object BuildUtilities extends GitInfo {
     setReleaseVersion,
     commitReleaseVersion,
     ChangelogReleaseSteps.updateChangelog,
-    ReadmeReleaseSteps.setReadmeReleaseVersion,
+    ReadmeReleaseSteps.generateReadme,
     tagRelease,
     publishArtifacts,
     ScaladocReleaseSteps.generateAndPushDocs,
-    setNextVersion,
-    commitNextVersion,
-    pushChanges
-  )
-
-  lazy val testReleaseProcess = Seq[ReleaseStep](
-    checkSnapshotDependencies,
-    inquireVersions,
-    runTest,
-    setReleaseVersion,
-    commitReleaseVersion,
-    ReadmeReleaseSteps.setReadmeReleaseVersion,
     setNextVersion,
     commitNextVersion,
     pushChanges
