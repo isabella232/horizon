@@ -1,23 +1,30 @@
 package com.paypal.stingray.sbt
 
-import sbt._
-import sbtrelease.ReleasePlugin.ReleaseKeys._
 import sbtrelease.ReleaseStep
+import sbt._
+import sbt.Keys._
+import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
+import java.io.PrintWriter
+import com.typesafe.sbt.SbtSite.SiteKeys._
 import scala.io.Source
+import sbtrelease.ReleasePlugin.ReleaseKeys._
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.io.PrintWriter
+
+trait GetVersion {
+
+  def getReleasedVersion(st: State): String = st.get(versions).getOrElse(
+    sys.error("No versions are set! Was this release part executed before inquireVersions?"))._1
+
+}
 
 /**
  * Adds [[https://github.com/sbt/sbt-release sbtrelease]] steps for checking and updating Changelog.
  *
  * Import if defining custom release process and need access to changelog steps.
  */
-object ChangelogReleaseSteps {
+object ChangelogReleaseSteps extends GetVersion {
   val changelog = "CHANGELOG.md"
-
-  private def getReleasedVersion(st: State): String = st.get(versions).getOrElse(
-    sys.error("No versions are set! Was this release part executed before inquireVersions?"))._1
 
   case class ChangelogInfo(msg: String, author: String)
 
@@ -108,4 +115,65 @@ object ChangelogReleaseSteps {
     }
   }
 
+}
+
+/**
+ * Includes a release step `setReadmeReleaseVersion` which creates a README.md from the Readme-Template.md template.
+ *
+ * Currently, takes Readme-Template.md, replaces all instances of `{{version}}` with the current release version,
+ * and creates README.md.
+ *
+ * Editing of the readme should happen on Readme-Template.md.
+ */
+object ReadmeReleaseSteps extends GetVersion {
+
+  val readme = "README.md"
+  val readmeTemplate = "Readme-Template.md"
+
+  lazy val setReadmeReleaseVersion: ReleaseStep = { st: State =>
+    val version = getReleasedVersion(st)
+    updateReadme(st, version)
+    commitReadme(st, version)
+    st
+  }
+
+  private def updateReadme(st: State, newVersion: String) {
+    val regex = """\{\{version\}\}""".r
+    val oldReadme = Source.fromFile(readmeTemplate).mkString
+    val out = new PrintWriter(readme, "UTF-8")
+    try {
+      val newReadme = regex.replaceAllIn(oldReadme, "%s".format(newVersion))
+      newReadme.foreach(out.write(_))
+    } finally {
+      out.close()
+    }
+  }
+
+  private def commitReadme(st: State, newVersion: String) {
+    val vcs = Project.extract(st).get(versionControlSystem).getOrElse(sys.error("Unable to get version control system."))
+    vcs.add(readme) !! st.log
+    vcs.commit("README.md updated to %s".format(newVersion)) ! st.log
+  }
+}
+
+/**
+ * Includes a release step `generateAndPushDocs` for [[sbtrelease]] to generate ScalaDocs
+ * using sbt-unidoc and sbt-site, followed by pushing them to the gh-pages branch of the current project's repository.
+ *
+ * Depends on adding `docSettings` to root project build settings.
+ */
+object ScaladocReleaseSteps {
+
+  lazy val generateAndPushDocs: ReleaseStep = { st: State =>
+    val st2 = executeTask(makeSite, "Making doc site")(st)
+    executeTask(pushSite, "Publishing doc site")(st2)
+  }
+
+  private def executeTask(task: TaskKey[_], info: String) = (st: State) => {
+    st.log.info(info)
+    val extracted = Project.extract(st)
+    val ref: ProjectRef = extracted.get(thisProjectRef)
+    val (newState, _) = extracted.runTask(task in ref, st)
+    newState
+  }
 }
