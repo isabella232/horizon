@@ -11,6 +11,12 @@ import sbtrelease.ReleasePlugin.ReleaseKeys._
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
+object CustomReleaseStepsKeys {
+  lazy val changelog = SettingKey[String]("build-utilities-changelog-file", "Name of the changelog file, default is CHANGELOG.md")
+  lazy val readme = SettingKey[String]("build-utilities-readme-file", "Name of the readme file, default is README.md")
+  lazy val readmeTemplate = SettingKey[String]("build-utilities-readme-template-file", "Name of the readme template file, default is Readme-Template.md")
+}
+
 /**
  * Common methods used amongst custom release step implementations.
  */
@@ -27,7 +33,7 @@ trait GetVersion {
  * Import if defining custom release process and need access to changelog steps.
  */
 object ChangelogReleaseSteps extends GetVersion {
-  val changelog = "CHANGELOG.md"
+  import CustomReleaseStepsKeys._
 
   case class ChangelogInfo(msg: String, author: String)
 
@@ -61,7 +67,6 @@ object ChangelogReleaseSteps extends GetVersion {
       updateChangelog(info, st)
       commitChangelog(st)
       st
-
     } catch {
       case info: ChangelogInfoMissingException => sys.error(ChangelogInfoMissingMessage)
       case update: ChangelogUpdateException=> sys.error(ChangelogUpdateMessage + update.getMessage)
@@ -88,12 +93,13 @@ object ChangelogReleaseSteps extends GetVersion {
 
   private def updateChangelog(info: ChangelogInfo, st: State): Unit = {
     try {
-      val oldChangelog = Source.fromFile(changelog).mkString
+      val changelogFile = Project.extract(st).get(changelog)
+      val oldChangelog = Source.fromFile(changelogFile).mkString
       val theVersion = getReleasedVersion(st)
       val dateFormat = new SimpleDateFormat("MM/dd/yy")
       val theDate = dateFormat.format(Calendar.getInstance().getTime)
 
-      val out = new PrintWriter( changelog, "UTF-8")
+      val out = new PrintWriter( changelogFile, "UTF-8")
       try {
         out.write("\n# " + theVersion + " " + theDate + " released by " + info.author + "\n")
         if (!info.msg.trim.startsWith("*")) out.write("* ")
@@ -109,9 +115,10 @@ object ChangelogReleaseSteps extends GetVersion {
 
   private def commitChangelog(st: State): Unit = {
     try {
+      val changelogFile = Project.extract(st).get(changelog)
       val vcs = Project.extract(st).get(versionControlSystem).getOrElse(
         sys.error("Aborting release. Working directory is not a repository of a recognized VCS."))
-      vcs.add(changelog) !! st.log
+      vcs.add(changelogFile) !! st.log
       vcs.commit("Changelog updated for " + getReleasedVersion(st)) ! st.log
     } catch {
       case e: Throwable  => throw new ChangelogCommitException(e)
@@ -131,33 +138,57 @@ object ChangelogReleaseSteps extends GetVersion {
  * If Readme-Template.md` does not exist, this step will fail.
  */
 object ReadmeReleaseSteps extends GetVersion {
+  import CustomReleaseStepsKeys._
 
-  val readme = "README.md"
-  val readmeTemplate = "Readme-Template.md"
+  val ReadmeGenerateMessage = "There was an error generating the readme: "
+  val ReadmeCommitMessage = "There was an error committing the readme: "
+
+  class ReadmeGenerateException(e: Throwable) extends Exception(e)
+  class ReadmeCommitException(e: Throwable) extends Exception(e)
 
   lazy val generateReadme: ReleaseStep = { st: State =>
-    val version = getReleasedVersion(st)
-    generateReadmeWithVersion(st, version)
-    commitReadme(st, version)
-    st
+
+    try {
+      val version = getReleasedVersion(st)
+      generateReadmeWithMappings(st, version)
+      commitReadme(st, version)
+      st
+    } catch {
+      case generate: ReadmeGenerateException=> sys.error(ReadmeGenerateMessage + generate.getMessage)
+      case commit: ReadmeCommitException => sys.error(ReadmeCommitMessage + commit.getMessage)
+      case e: Throwable => sys.error("There was an error updating the readme: " + e.getMessage)
+    }
   }
 
-  private def generateReadmeWithVersion(st: State, newVersion: String): Unit = {
-    val regex = """\{\{version\}\}""".r
-    val template = Source.fromFile(readmeTemplate).mkString
-    val out = new PrintWriter(readme, "UTF-8")
+  private def generateReadmeWithMappings(st: State, newVersion: String): Unit = {
     try {
-      val newReadme = regex.replaceAllIn(template, "%s".format(newVersion))
-      newReadme.foreach(out.write(_))
-    } finally {
-      out.close()
+      val regex = """\{\{version\}\}""".r
+      val extracted = Project.extract(st)
+      val readmeFile = extracted.get(readme)
+      val templateFile = extracted.get(readmeTemplate)
+      val template = Source.fromFile(templateFile).mkString
+      val out = new PrintWriter(readmeFile, "UTF-8")
+      try {
+        val newReadme = regex.replaceAllIn(template, s"$newVersion")
+        newReadme.foreach(out.write(_))
+      } finally {
+        out.close()
+      }
+    } catch {
+      case e: Throwable => throw new ReadmeGenerateException(e)
     }
   }
 
   private def commitReadme(st: State, newVersion: String): Unit = {
-    val vcs = Project.extract(st).get(versionControlSystem).getOrElse(sys.error("Unable to get version control system."))
-    vcs.add(readme) !! st.log
-    vcs.commit("README.md updated to %s".format(newVersion)) ! st.log
+    try {
+      val extracted = Project.extract(st)
+      val vcs = extracted.get(versionControlSystem).getOrElse(sys.error("Unable to get version control system."))
+      val readmeFile = extracted.get(readme)
+      vcs.add(readmeFile) !! st.log
+      vcs.commit(s"README.md updated to $newVersion") ! st.log
+    } catch {
+      case e: Throwable => throw new ReadmeCommitException(e)
+    }
   }
 }
 
@@ -165,7 +196,7 @@ object ReadmeReleaseSteps extends GetVersion {
  * Includes a release step `generateAndPushDocs` for [[sbtrelease]] to generate ScalaDocs
  * using sbt-unidoc and sbt-site, followed by pushing them to the gh-pages branch of the current project's repository.
  *
- * Depends on adding `docSettings` to root project build settings.
+ * Depends on adding `utilitySettings` to root project build settings.
  */
 object ScaladocReleaseSteps {
 

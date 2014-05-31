@@ -183,7 +183,7 @@ object AdditionalReleaseSteps {
     val template = Source.fromFile(readmeTemplate).mkString
     val out = new PrintWriter(readme, "UTF-8")
     try {
-      val newReadme = regex.replaceAllIn(template, "%s".format(newVersion))
+      val newReadme = regex.replaceAllIn(template, s"$newVersion")
       newReadme.foreach(out.write(_))
     } finally {
       out.close()
@@ -193,7 +193,7 @@ object AdditionalReleaseSteps {
   private def commitReadme(st: State, newVersion: String): Unit = {
     val vcs = Project.extract(st).get(versionControlSystem).getOrElse(sys.error("Unable to get version control system."))
     vcs.add(readme) !! st.log
-    vcs.commit("README.md updated to %s".format(newVersion)) ! st.log
+    vcs.commit(s"README.md updated to $newVersion") ! st.log
   }
 
 }

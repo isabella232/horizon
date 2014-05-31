@@ -25,8 +25,9 @@ object BuildUtilitiesKeys {
  * }}}
  *
  */
-object BuildUtilities extends GitInfo {
+object BuildUtilities extends Plugin with GitInfo {
   import BuildUtilitiesKeys._
+  import CustomReleaseStepsKeys._
 
   /**
    * Default release process for projects,
@@ -34,8 +35,8 @@ object BuildUtilities extends GitInfo {
    *
    * Caveats:
    *
-   * Depends on adding `docSettings` to build settings in order to complete the `generateAndPushDocs` release step.
-   * Readme release step depends on `Readme-Template.md` file, from which the README.md file is produced.
+   * Depends on adding `utilitySettings` to build settings in order to complete the `generateAndPushDocs` release step.
+   * Readme release step depends on `Readme-Template.md` file, from which the README.md file is produced. Override setting if file is named differently.
    *
    * @example
    * {{{
@@ -79,6 +80,17 @@ object BuildUtilities extends GitInfo {
     pushChanges
   )
 
+  lazy val testReleaseProcess = Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    setReleaseVersion,
+    commitReleaseVersion,
+    ReadmeReleaseSteps.generateReadme,
+    setNextVersion,
+    commitNextVersion,
+    pushChanges
+  )
+
   private val gitDir = new File(".", ".git")
   private val repo = new FileRepositoryBuilder().setGitDir(gitDir)
     .readEnvironment() // scan environment GIT_* variables
@@ -111,7 +123,9 @@ object BuildUtilities extends GitInfo {
   }
 
   /**
-   * Settings val which provides all settings to generate and publish project documentation to the gh-pages branch of the repository.
+   * Settings val which provides all utility settings.
+   *
+   * Current settings:
    *
    * Combines sbt-unidoc, sbt-site, and ghpages settings. Also sets the following additional settings:
    *
@@ -121,6 +135,9 @@ object BuildUtilities extends GitInfo {
    * synchLocal (sbt-ghpages) is overridden so older docs are not deleted
    * repository (sbt-ghpages) is overridden to clone the repo's gh-pages branch into a directory structure of the form:
    *   ~/.sbt/ghpages/$name/$repo
+   * changelog is set to CHANGELOG.md
+   * readme is set to README.md
+   * readmeTemplate is set to Readme-Template.md
    *
    * Customize settings in your project's build file as needed. For example, look at unidoc settings to exclude aggregate projects from the docs.
    *
@@ -134,18 +151,18 @@ object BuildUtilities extends GitInfo {
    *
    * To use:
    *
-   * Add `docSettings` to the root project's settings. For example:
+   * Add `utilitySettings` to the root project's settings. For example:
    *
    * {{{
    *   lazy val parent = Project("parent", file("."),
-   *    settings = standardSettings ++ docSettings ++ Seq(
+   *    settings = standardSettings ++ utilitySettings ++ Seq(
    *     name := "parent",
    *    ),
    *    aggregate = Seq(project1, project2)
    *   )
    * }}}
    *
-   * Provided you have included `docSettings` in your root project's build settings, the `defaultReleaseProcess` using [[sbtrelease]]
+   * Provided you have included `utilitySettings` in your root project's build settings, the `defaultReleaseProcess` using [[sbtrelease]]
    * includes a step to generate and push docs.
    *
    * To manually create, run the following sbt command:
@@ -155,7 +172,7 @@ object BuildUtilities extends GitInfo {
    * }}}
    *
    */
-  lazy val docSettings: Seq[Setting[_]] =
+  lazy val utilitySettings: Seq[Setting[_]] =
     unidocSettings ++
     ghpages.settings ++
     site.settings ++ Seq(
@@ -170,7 +187,10 @@ object BuildUtilities extends GitInfo {
         val betterMappings = mappings.map { case (file, target) => (file, repo / target) }
         IO.copy(betterMappings)
         repo
-      }
+      },
+      changelog := "CHANGELOG.md",
+      readme := "README.md",
+      readmeTemplate := "Readme-Template.md"
     )
 }
 
