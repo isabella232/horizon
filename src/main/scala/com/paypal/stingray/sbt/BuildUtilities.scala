@@ -99,17 +99,6 @@ object BuildUtilities extends Plugin with GitInfo {
     pushChanges
   )
 
-  lazy val testReleaseProcess = Seq[ReleaseStep](
-    checkSnapshotDependencies,
-    inquireVersions,
-    setReleaseVersion,
-    commitReleaseVersion,
-    ReadmeReleaseSteps.generateReadme,
-    setNextVersion,
-    commitNextVersion,
-    pushChanges
-  )
-
   private val gitDir = new File(".", ".git")
   private val repo = new FileRepositoryBuilder().setGitDir(gitDir)
     .readEnvironment() // scan environment GIT_* variables
