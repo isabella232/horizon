@@ -18,7 +18,7 @@ trait CommonContext {
 
   def getReleasedVersion(st: State): String = st.get(versions).getOrElse(
     sys.error("No versions are set! Was this release part executed before inquireVersions?"))._1
-  // executeTask(task, "")(st)
+
   def executeTask(task: TaskKey[_], info: String): State => State = (st: State) => {
     st.log.info(info)
     val extracted = Project.extract(st)
