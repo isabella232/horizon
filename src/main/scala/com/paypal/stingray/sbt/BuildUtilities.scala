@@ -12,12 +12,27 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import com.typesafe.sbt.SbtGit.GitKeys._
 import com.typesafe.sbt.SbtSite.SiteKeys._
 
+/**
+ * Settings and tasks for various build utilities.
+ *
+ * Current settings:
+ *
+ * ghpagesDir - unique folder structure for local clone of ghpages branch (used by sbt-ghpages)
+ * changelog - name of changelog file. Default is CHANGELOG.md
+ * readme - name of the readme file. Default is README.md
+ * readmeTemplate - name of the template file from which to generate the readme. Default is Readme-Template.md
+ * readmeTemplateMappings - keys/values to find and replace when generating the readme
+ * genReadme - sbt task which generates the readme file according to the template and mappings. Does not commit anything.
+ *
+ * Override as needed.
+ */
 object BuildUtilitiesKeys {
   lazy val ghpagesDir = SettingKey[String]("build-utilities-ghpages-directory", "unique folder structure for the git project gh-pages branch")
   lazy val changelog = SettingKey[String]("build-utilities-changelog-file", "Name of the changelog file, default is CHANGELOG.md")
   lazy val readme = SettingKey[String]("build-utilities-readme-file", "Name of the readme file, default is README.md")
   lazy val readmeTemplate = SettingKey[String]("build-utilities-readme-template-file", "Name of the readme template file from which the readme is created, default is Readme-Template.md")
   lazy val readmeTemplateMappings = SettingKey[Map[String, String]]("build-utilities-readme-template-mappings", "Mappings for generating readme file")
+  lazy val genReadme = TaskKey[Unit]("gen-readme", "Generates readme file from template")
 }
 
 /**
@@ -58,7 +73,7 @@ object BuildUtilities extends Plugin with GitInfo {
    * 7. updateChangelog - updates the changelog entry for this
    *    release version and commits the change
    * 8. generateReadme - generates `README.md` file from `Readme-Template.md`, substituting
-   *    {{key}}` with associated value according to the `readmeTemplateMappings` setting key.
+   *    `{{key}}` with associated value according to the `readmeTemplateMappings` settings.
    * 8. tagRelease - tags the release
    * 9. publishArtifacts - publishes artifacts to specified location
    * 10. generateAndPushDocs - generates ScalaDocs and pushes to the gh-pages branch
@@ -196,7 +211,8 @@ object BuildUtilities extends Plugin with GitInfo {
       readmeTemplate := "Readme-Template.md",
       readmeTemplateMappings <<= (version in ThisBuild) { ver =>
         Map("version" -> ver)
-      }
+      },
+      genReadme <<= ReadmeReleaseSteps.genReadmeTask
     )
 }
 

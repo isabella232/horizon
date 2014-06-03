@@ -191,7 +191,6 @@ object AdditionalReleaseSteps {
       val out = new PrintWriter(readme, "UTF-8")
       try {
         val newReadme = templateMappings.foldLeft(template) { (currentReadme, mapping) =>
-          println(mapping)
           val (regKey, replacement) = mapping
           val regex = s"\\{\\{$regKey\\}\\}".r
           regex.replaceAllIn(currentReadme, replacement)

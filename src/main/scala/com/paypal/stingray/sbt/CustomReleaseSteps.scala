@@ -14,11 +14,18 @@ import java.util.Calendar
 /**
  * Common methods used amongst custom release step implementations.
  */
-trait GetVersion {
+trait CommonContext {
 
   def getReleasedVersion(st: State): String = st.get(versions).getOrElse(
     sys.error("No versions are set! Was this release part executed before inquireVersions?"))._1
 
+  def executeTask(task: TaskKey[_], info: String) = (st: State) => {
+    st.log.info(info)
+    val extracted = Project.extract(st)
+    val ref: ProjectRef = extracted.get(thisProjectRef)
+    val (newState, _) = extracted.runTask(task in ref, st)
+    newState
+  }
 }
 
 /**
@@ -28,7 +35,7 @@ trait GetVersion {
  *
  * Import if defining custom release process and need access to changelog steps.
  */
-object ChangelogReleaseSteps extends GetVersion {
+object ChangelogReleaseSteps extends CommonContext {
   import BuildUtilitiesKeys._
 
   case class ChangelogInfo(msg: String, author: String)
@@ -143,7 +150,7 @@ object ChangelogReleaseSteps extends GetVersion {
  * Additional mappings can be added using `readmeTemplateMappings ++= ...`, or overridden completely using `readmeTemplateMappings := ...`.
  *
  */
-object ReadmeReleaseSteps extends GetVersion {
+object ReadmeReleaseSteps extends CommonContext {
   import BuildUtilitiesKeys._
 
   val ReadmeGenerateMessage = "There was an error generating the readme: "
@@ -156,8 +163,8 @@ object ReadmeReleaseSteps extends GetVersion {
 
     try {
       val version = getReleasedVersion(st)
-      generateReadmeFromMappings(st)
-      commitReadme(st, version)
+      val st2 = executeTask(genReadme, "Generating readme")(st)
+      commitReadme(st2, version)
       st
     } catch {
       case generate: ReadmeGenerateException=> sys.error(ReadmeGenerateMessage + generate.getMessage)
@@ -166,17 +173,12 @@ object ReadmeReleaseSteps extends GetVersion {
     }
   }
 
-  private def generateReadmeFromMappings(st: State): Unit = {
+  def genReadmeTask: Def.Initialize[Task[Unit]] = (readme, readmeTemplate, readmeTemplateMappings).map { (readmeFile, templateFile, templateMappings) =>
     try {
-      val extracted = Project.extract(st)
-      val readmeFile = extracted.get(readme)
-      val templateFile = extracted.get(readmeTemplate)
-      val templateMappings = extracted.get(readmeTemplateMappings)
       val template = Source.fromFile(templateFile).mkString
       val out = new PrintWriter(readmeFile, "UTF-8")
       try {
         val newReadme = templateMappings.foldLeft(template) { (currentReadme, mapping) =>
-          println(mapping)
           val (regKey, replacement) = mapping
           // format will look like {{key}} in template
           val regex = s"\\{\\{$regKey\\}\\}".r
@@ -187,7 +189,7 @@ object ReadmeReleaseSteps extends GetVersion {
         out.close()
       }
     } catch {
-      case e: Throwable => throw new ReadmeGenerateException(e)
+      case e: Throwable => throw new ReadmeCommitException(e)
     }
   }
 
@@ -210,18 +212,10 @@ object ReadmeReleaseSteps extends GetVersion {
  *
  * Depends on adding `utilitySettings` to root project build settings.
  */
-object ScaladocReleaseSteps {
+object ScaladocReleaseSteps extends CommonContext {
 
   lazy val generateAndPushDocs: ReleaseStep = { st: State =>
     val st2 = executeTask(makeSite, "Making doc site")(st)
     executeTask(pushSite, "Publishing doc site")(st2)
-  }
-
-  private def executeTask(task: TaskKey[_], info: String) = (st: State) => {
-    st.log.info(info)
-    val extracted = Project.extract(st)
-    val ref: ProjectRef = extracted.get(thisProjectRef)
-    val (newState, _) = extracted.runTask(task in ref, st)
-    newState
   }
 }
