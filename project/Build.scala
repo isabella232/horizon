@@ -184,23 +184,19 @@ object AdditionalReleaseSteps {
   }
 
   private def generateReadmeFromMappings(st: State, newVersion: String): Unit = {
+    val extracted = Project.extract(st)
+    val templateMappings = extracted.get(readmeTemplateMappings)
+    val template = Source.fromFile(readmeTemplate).mkString
+    val out = new PrintWriter(readme, "UTF-8")
     try {
-      val extracted = Project.extract(st)
-      val templateMappings = extracted.get(readmeTemplateMappings)
-      val template = Source.fromFile(readmeTemplate).mkString
-      val out = new PrintWriter(readme, "UTF-8")
-      try {
-        val newReadme = templateMappings.foldLeft(template) { (currentReadme, mapping) =>
-          val (regKey, replacement) = mapping
-          val regex = s"\\{\\{$regKey\\}\\}".r
-          regex.replaceAllIn(currentReadme, replacement)
-        }
-        newReadme.foreach(out.write(_))
-      } finally {
-        out.close()
+      val newReadme = templateMappings.foldLeft(template) { (currentReadme, mapping) =>
+        val (regKey, replacement) = mapping
+        val regex = s"\\{\\{$regKey\\}\\}".r
+        regex.replaceAllIn(currentReadme, replacement)
       }
-    } catch {
-      case e: Throwable => throw new Exception(e)
+      newReadme.foreach(out.write(_))
+    } finally {
+      out.close()
     }
   }
 

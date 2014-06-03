@@ -189,7 +189,7 @@ object ReadmeReleaseSteps extends CommonContext {
         out.close()
       }
     } catch {
-      case e: Throwable => throw new ReadmeCommitException(e)
+      case e: Throwable => throw new ReadmeGenerateException(e)
     }
   }
 
