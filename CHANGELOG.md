@@ -1,7 +1,7 @@
 
 # 0.5.0 6/3/14 released by mvaznaian
 * Add generateReadme release step
-* Add genReadme sbt task
+* Add gen-readme sbt task
 * Rename docSettings to utilitySettings
 * readme, changelog, and associated file names can be overridden
 
