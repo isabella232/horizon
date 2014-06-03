@@ -30,7 +30,8 @@ object BuildUtilitiesKeys {
   lazy val ghpagesDir = SettingKey[String]("build-utilities-ghpages-directory", "unique folder structure for the git project gh-pages branch")
   lazy val changelog = SettingKey[String]("build-utilities-changelog-file", "Name of the changelog file, default is CHANGELOG.md")
   lazy val readme = SettingKey[String]("build-utilities-readme-file", "Name of the readme file, default is README.md")
-  lazy val readmeTemplate = SettingKey[String]("build-utilities-readme-template-file", "Name of the readme template file from which the readme is created, default is Readme-Template.md")
+  lazy val readmeTemplate = SettingKey[String]("build-utilities-readme-template-file",
+    "Name of the readme template file from which the readme is created, default is Readme-Template.md")
   lazy val readmeTemplateMappings = SettingKey[Map[String, String]]("build-utilities-readme-template-mappings", "Mappings for generating readme file")
   lazy val genReadme = TaskKey[Unit]("gen-readme", "Generates readme file from template")
 }
