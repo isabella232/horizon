@@ -12,8 +12,28 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import com.typesafe.sbt.SbtGit.GitKeys._
 import com.typesafe.sbt.SbtSite.SiteKeys._
 
+/**
+ * Settings and tasks for various build utilities.
+ *
+ * Current settings:
+ *
+ * ghpagesDir - unique folder structure for local clone of ghpages branch (used by sbt-ghpages)
+ * changelog - name of changelog file. Default is CHANGELOG.md
+ * readme - name of the readme file. Default is README.md
+ * readmeTemplate - name of the template file from which to generate the readme. Default is Readme-Template.md
+ * readmeTemplateMappings - keys/values to find and replace when generating the readme
+ * genReadme - sbt task which generates the readme file according to the template and mappings. Does not commit anything.
+ *
+ * Override as needed.
+ */
 object BuildUtilitiesKeys {
   lazy val ghpagesDir = SettingKey[String]("build-utilities-ghpages-directory", "unique folder structure for the git project gh-pages branch")
+  lazy val changelog = SettingKey[String]("build-utilities-changelog-file", "Name of the changelog file, default is CHANGELOG.md")
+  lazy val readme = SettingKey[String]("build-utilities-readme-file", "Name of the readme file, default is README.md")
+  lazy val readmeTemplate = SettingKey[String]("build-utilities-readme-template-file",
+    "Name of the readme template file from which the readme is created, default is Readme-Template.md")
+  lazy val readmeTemplateMappings = SettingKey[Map[String, String]]("build-utilities-readme-template-mappings", "Mappings for generating readme file")
+  lazy val genReadme = TaskKey[Unit]("gen-readme", "Generates readme file from template")
 }
 
 /**
@@ -25,15 +45,17 @@ object BuildUtilitiesKeys {
  * }}}
  *
  */
-object BuildUtilities extends GitInfo {
-
+object BuildUtilities extends Plugin with GitInfo {
   import BuildUtilitiesKeys._
 
   /**
    * Default release process for projects,
    * uses sequence of release steps from [[https://github.com/sbt/sbt-release sbtrelease]]
    *
-   * Depends on adding `docSettings` to build settings in order to complete the `generateAndPushDocs` release step.
+   * Caveats:
+   *
+   * Depends on adding `utilitySettings` to build settings in order to complete the `generateAndPushDocs` release step.
+   * Readme release step depends on `Readme-Template.md` file, from which the README.md file is produced. Override setting if file is named differently.
    *
    * @example
    * {{{
@@ -51,6 +73,8 @@ object BuildUtilities extends GitInfo {
    * 6. commitReleaseVersion - commits the release version
    * 7. updateChangelog - updates the changelog entry for this
    *    release version and commits the change
+   * 8. generateReadme - generates `README.md` file from `Readme-Template.md`, substituting
+   *    `{{key}}` with associated value according to the `readmeTemplateMappings` settings.
    * 8. tagRelease - tags the release
    * 9. publishArtifacts - publishes artifacts to specified location
    * 10. generateAndPushDocs - generates ScalaDocs and pushes to the gh-pages branch
@@ -66,9 +90,21 @@ object BuildUtilities extends GitInfo {
     setReleaseVersion,
     commitReleaseVersion,
     ChangelogReleaseSteps.updateChangelog,
+    ReadmeReleaseSteps.generateReadme,
     tagRelease,
     publishArtifacts,
     ScaladocReleaseSteps.generateAndPushDocs,
+    setNextVersion,
+    commitNextVersion,
+    pushChanges
+  )
+
+  lazy val testReleaseProcess = Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    setReleaseVersion,
+    commitReleaseVersion,
+    ReadmeReleaseSteps.generateReadme,
     setNextVersion,
     commitNextVersion,
     pushChanges
@@ -106,7 +142,9 @@ object BuildUtilities extends GitInfo {
   }
 
   /**
-   * Settings val which provides all settings to generate and publish project documentation to the gh-pages branch of the repository.
+   * Settings val which provides all utility settings.
+   *
+   * Current settings:
    *
    * Combines sbt-unidoc, sbt-site, and ghpages settings. Also sets the following additional settings:
    *
@@ -116,6 +154,9 @@ object BuildUtilities extends GitInfo {
    * synchLocal (sbt-ghpages) is overridden so older docs are not deleted
    * repository (sbt-ghpages) is overridden to clone the repo's gh-pages branch into a directory structure of the form:
    *   ~/.sbt/ghpages/$name/$repo
+   * changelog is set to CHANGELOG.md
+   * readme is set to README.md
+   * readmeTemplate is set to Readme-Template.md
    *
    * Customize settings in your project's build file as needed. For example, look at unidoc settings to exclude aggregate projects from the docs.
    *
@@ -129,18 +170,18 @@ object BuildUtilities extends GitInfo {
    *
    * To use:
    *
-   * Add `docSettings` to the root project's settings. For example:
+   * Add `utilitySettings` to the root project's settings. For example:
    *
    * {{{
    *   lazy val parent = Project("parent", file("."),
-   *    settings = standardSettings ++ docSettings ++ Seq(
+   *    settings = standardSettings ++ utilitySettings ++ Seq(
    *     name := "parent",
    *    ),
    *    aggregate = Seq(project1, project2)
    *   )
    * }}}
    *
-   * Provided you have included `docSettings` in your root project's build settings, the `defaultReleaseProcess` using [[sbtrelease]]
+   * Provided you have included `utilitySettings` in your root project's build settings, the `defaultReleaseProcess` using [[sbtrelease]]
    * includes a step to generate and push docs.
    *
    * To manually create, run the following sbt command:
@@ -150,7 +191,7 @@ object BuildUtilities extends GitInfo {
    * }}}
    *
    */
-  lazy val docSettings: Seq[Setting[_]] =
+  lazy val utilitySettings: Seq[Setting[_]] =
     unidocSettings ++
     ghpages.settings ++
     site.settings ++ Seq(
@@ -165,7 +206,14 @@ object BuildUtilities extends GitInfo {
         val betterMappings = mappings.map { case (file, target) => (file, repo / target) }
         IO.copy(betterMappings)
         repo
-      }
+      },
+      changelog := "CHANGELOG.md",
+      readme := "README.md",
+      readmeTemplate := "Readme-Template.md",
+      readmeTemplateMappings <<= (version in ThisBuild) { ver =>
+        Map("version" -> ver)
+      },
+      genReadme <<= ReadmeReleaseSteps.genReadmeTask
     )
 }
 

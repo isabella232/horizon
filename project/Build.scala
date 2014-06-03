@@ -1,4 +1,5 @@
 import com.typesafe.sbt.SbtSite.SiteKeys._
+import java.io.PrintWriter
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import sbt._
 import Keys._
@@ -20,6 +21,7 @@ import ReleaseKeys._
 
 object BuildUtilitiesKeys {
   lazy val ghpagesDir = SettingKey[String]("build-utilities-ghpages-directory", "unique folder structure for the git project gh-pages branch")
+  lazy val readmeTemplateMappings = SettingKey[Map[String, String]]("build-utilities-readme-template-mappings", "Mappings for generating readme file")
 }
 
 object BuildSettings {
@@ -66,6 +68,9 @@ object BuildSettings {
       },
       git.remoteRepo := originUrl,
       tagName <<= (version in ThisBuild).map(a => a),
+      readmeTemplateMappings <<= (version in ThisBuild) { ver =>
+        Map("version" -> ver)
+      },
       releaseProcess := Seq[ReleaseStep](
         checkSnapshotDependencies,
         inquireVersions,
@@ -73,6 +78,7 @@ object BuildSettings {
         runTest,
         setReleaseVersion,
         commitReleaseVersion,
+        generateReadme,
         tagRelease,
         publishArtifacts,
         generateAndPushDocs,
@@ -122,9 +128,10 @@ object UtilitiesBuild extends Build {
 
 /**
  * Adds step to ensure an entry for the current release version is present in the changelog,
- * and generate and push ScalaDocs to gh-pages branch.
+ * generate and push ScalaDocs to gh-pages branch, and generate readme with release version injected.
  */
 object AdditionalReleaseSteps {
+  import BuildUtilitiesKeys._
 
   lazy val ensureChangelogEntry: ReleaseStep = { st: State =>
     try {
@@ -164,6 +171,43 @@ object AdditionalReleaseSteps {
     val ref: ProjectRef = extracted.get(thisProjectRef)
     val (newState, _) = extracted.runTask(task in ref, st)
     newState
+  }
+
+  val readme = "README.md"
+  val readmeTemplate = "Readme-Template.md"
+
+  lazy val generateReadme: ReleaseStep = { st: State =>
+    val version = getReleasedVersion(st)
+    generateReadmeFromMappings(st, version)
+    commitReadme(st, version)
+    st
+  }
+
+  private def generateReadmeFromMappings(st: State, newVersion: String): Unit = {
+    try {
+      val extracted = Project.extract(st)
+      val templateMappings = extracted.get(readmeTemplateMappings)
+      val template = Source.fromFile(readmeTemplate).mkString
+      val out = new PrintWriter(readme, "UTF-8")
+      try {
+        val newReadme = templateMappings.foldLeft(template) { (currentReadme, mapping) =>
+          val (regKey, replacement) = mapping
+          val regex = s"\\{\\{$regKey\\}\\}".r
+          regex.replaceAllIn(currentReadme, replacement)
+        }
+        newReadme.foreach(out.write(_))
+      } finally {
+        out.close()
+      }
+    } catch {
+      case e: Throwable => throw new Exception(e)
+    }
+  }
+
+  private def commitReadme(st: State, newVersion: String): Unit = {
+    val vcs = Project.extract(st).get(versionControlSystem).getOrElse(sys.error("Unable to get version control system."))
+    vcs.add(readme) !! st.log
+    vcs.commit(s"README.md updated to $newVersion") ! st.log
   }
 
 }
