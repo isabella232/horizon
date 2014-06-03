@@ -11,12 +11,6 @@ import sbtrelease.ReleasePlugin.ReleaseKeys._
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
-object CustomReleaseStepsKeys {
-  lazy val changelog = SettingKey[String]("build-utilities-changelog-file", "Name of the changelog file, default is CHANGELOG.md")
-  lazy val readme = SettingKey[String]("build-utilities-readme-file", "Name of the readme file, default is README.md")
-  lazy val readmeTemplate = SettingKey[String]("build-utilities-readme-template-file", "Name of the readme template file, default is Readme-Template.md")
-}
-
 /**
  * Common methods used amongst custom release step implementations.
  */
@@ -30,10 +24,12 @@ trait GetVersion {
 /**
  * Adds [[https://github.com/sbt/sbt-release sbtrelease]] steps for checking and updating Changelog.
  *
+ * Changelog file is called `CHANGELOG.md` by default, can be overridden using the `changelog` setting in CustomReleaseStepsKeys.
+ *
  * Import if defining custom release process and need access to changelog steps.
  */
 object ChangelogReleaseSteps extends GetVersion {
-  import CustomReleaseStepsKeys._
+  import BuildUtilitiesKeys._
 
   case class ChangelogInfo(msg: String, author: String)
 
@@ -128,17 +124,27 @@ object ChangelogReleaseSteps extends GetVersion {
 }
 
 /**
- * Includes a release step `generateReadme` which creates a README.md from the Readme-Template.md template.
+ * Includes a release step `generateReadme` which creates a `README.md` from a template.
  *
- * Looks for a file named `Readme-Template.md`, replaces all instances of {{version}}` with the current release version,
- * and creates `README.md`.
+ * By default, the template file is called `Readme-Template.md`, and it generates a file named `README.md`.
+ * Customize these using the `readmeTemplate` and `readme` settings defined in CustomReleaseStepsKeys.
  *
- * Editing the content of the readme should happen via Readme-Template.md.
+ * The template can contain mapping keys in the form `{{key}}`, which will then be replaced with values specified in the `readmeTemplateMappings` setting key.
  *
- * If Readme-Template.md` does not exist, this step will fail.
+ * By default, `readmeTemplateMappings` is defined:
+ * {{{
+ *   readmeTemplateMappings <<= (version in ThisBuild) { ver =>
+ *      Map("version" -> ver)
+ *   }
+ * }}}
+ *
+ * Thus, any instance of `{{version}}` in the template will get replaced with the release version as part of the `generateReadme` release step.
+ *
+ * Additional mappings can be added using `readmeTemplateMappings ++= ...`, or overridden completely using `readmeTemplateMappings := ...`.
+ *
  */
 object ReadmeReleaseSteps extends GetVersion {
-  import CustomReleaseStepsKeys._
+  import BuildUtilitiesKeys._
 
   val ReadmeGenerateMessage = "There was an error generating the readme: "
   val ReadmeCommitMessage = "There was an error committing the readme: "
@@ -150,7 +156,7 @@ object ReadmeReleaseSteps extends GetVersion {
 
     try {
       val version = getReleasedVersion(st)
-      generateReadmeWithMappings(st, version)
+      generateReadmeFromMappings(st)
       commitReadme(st, version)
       st
     } catch {
@@ -160,16 +166,22 @@ object ReadmeReleaseSteps extends GetVersion {
     }
   }
 
-  private def generateReadmeWithMappings(st: State, newVersion: String): Unit = {
+  private def generateReadmeFromMappings(st: State): Unit = {
     try {
-      val regex = """\{\{version\}\}""".r
       val extracted = Project.extract(st)
       val readmeFile = extracted.get(readme)
       val templateFile = extracted.get(readmeTemplate)
+      val templateMappings = extracted.get(readmeTemplateMappings)
       val template = Source.fromFile(templateFile).mkString
       val out = new PrintWriter(readmeFile, "UTF-8")
       try {
-        val newReadme = regex.replaceAllIn(template, s"$newVersion")
+        val newReadme = templateMappings.foldLeft(template) { (currentReadme, mapping) =>
+          println(mapping)
+          val (regKey, replacement) = mapping
+          // format will look like {{key}} in template
+          val regex = s"\\{\\{$regKey\\}\\}".r
+          regex.replaceAllIn(currentReadme, replacement)
+        }
         newReadme.foreach(out.write(_))
       } finally {
         out.close()

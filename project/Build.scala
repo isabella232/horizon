@@ -21,6 +21,7 @@ import ReleaseKeys._
 
 object BuildUtilitiesKeys {
   lazy val ghpagesDir = SettingKey[String]("build-utilities-ghpages-directory", "unique folder structure for the git project gh-pages branch")
+  lazy val readmeTemplateMappings = SettingKey[Map[String, String]]("build-utilities-readme-template-mappings", "Mappings for generating readme file")
 }
 
 object BuildSettings {
@@ -67,6 +68,9 @@ object BuildSettings {
       },
       git.remoteRepo := originUrl,
       tagName <<= (version in ThisBuild).map(a => a),
+      readmeTemplateMappings <<= (version in ThisBuild) { ver =>
+        Map("version" -> ver)
+      },
       releaseProcess := Seq[ReleaseStep](
         checkSnapshotDependencies,
         inquireVersions,
@@ -127,6 +131,7 @@ object UtilitiesBuild extends Build {
  * generate and push ScalaDocs to gh-pages branch, and generate readme with release version injected.
  */
 object AdditionalReleaseSteps {
+  import BuildUtilitiesKeys._
 
   lazy val ensureChangelogEntry: ReleaseStep = { st: State =>
     try {
@@ -173,20 +178,30 @@ object AdditionalReleaseSteps {
 
   lazy val generateReadme: ReleaseStep = { st: State =>
     val version = getReleasedVersion(st)
-    generateReadmeWithVersion(st, version)
+    generateReadmeFromMappings(st, version)
     commitReadme(st, version)
     st
   }
 
-  private def generateReadmeWithVersion(st: State, newVersion: String): Unit = {
-    val regex = """\{\{version\}\}""".r
-    val template = Source.fromFile(readmeTemplate).mkString
-    val out = new PrintWriter(readme, "UTF-8")
+  private def generateReadmeFromMappings(st: State, newVersion: String): Unit = {
     try {
-      val newReadme = regex.replaceAllIn(template, s"$newVersion")
-      newReadme.foreach(out.write(_))
-    } finally {
-      out.close()
+      val extracted = Project.extract(st)
+      val templateMappings = extracted.get(readmeTemplateMappings)
+      val template = Source.fromFile(readmeTemplate).mkString
+      val out = new PrintWriter(readme, "UTF-8")
+      try {
+        val newReadme = templateMappings.foldLeft(template) { (currentReadme, mapping) =>
+          println(mapping)
+          val (regKey, replacement) = mapping
+          val regex = s"\\{\\{$regKey\\}\\}".r
+          regex.replaceAllIn(currentReadme, replacement)
+        }
+        newReadme.foreach(out.write(_))
+      } finally {
+        out.close()
+      }
+    } catch {
+      case e: Throwable => throw new Exception(e)
     }
   }
 

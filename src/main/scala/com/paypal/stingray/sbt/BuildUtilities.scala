@@ -14,6 +14,10 @@ import com.typesafe.sbt.SbtSite.SiteKeys._
 
 object BuildUtilitiesKeys {
   lazy val ghpagesDir = SettingKey[String]("build-utilities-ghpages-directory", "unique folder structure for the git project gh-pages branch")
+  lazy val changelog = SettingKey[String]("build-utilities-changelog-file", "Name of the changelog file, default is CHANGELOG.md")
+  lazy val readme = SettingKey[String]("build-utilities-readme-file", "Name of the readme file, default is README.md")
+  lazy val readmeTemplate = SettingKey[String]("build-utilities-readme-template-file", "Name of the readme template file from which the readme is created, default is Readme-Template.md")
+  lazy val readmeTemplateMappings = SettingKey[Map[String, String]]("build-utilities-readme-template-mappings", "Mappings for generating readme file")
 }
 
 /**
@@ -27,7 +31,6 @@ object BuildUtilitiesKeys {
  */
 object BuildUtilities extends Plugin with GitInfo {
   import BuildUtilitiesKeys._
-  import CustomReleaseStepsKeys._
 
   /**
    * Default release process for projects,
@@ -54,8 +57,8 @@ object BuildUtilities extends Plugin with GitInfo {
    * 6. commitReleaseVersion - commits the release version
    * 7. updateChangelog - updates the changelog entry for this
    *    release version and commits the change
-   * 8. generateReadme - generates README.md file from Readme-Template.md, substituting
-   *    `{{version}}` for the release version.
+   * 8. generateReadme - generates `README.md` file from `Readme-Template.md`, substituting
+   *    {{key}}` with associated value according to the `readmeTemplateMappings` setting key.
    * 8. tagRelease - tags the release
    * 9. publishArtifacts - publishes artifacts to specified location
    * 10. generateAndPushDocs - generates ScalaDocs and pushes to the gh-pages branch
@@ -190,7 +193,10 @@ object BuildUtilities extends Plugin with GitInfo {
       },
       changelog := "CHANGELOG.md",
       readme := "README.md",
-      readmeTemplate := "Readme-Template.md"
+      readmeTemplate := "Readme-Template.md",
+      readmeTemplateMappings <<= (version in ThisBuild) { ver =>
+        Map("version" -> ver)
+      }
     )
 }
 
