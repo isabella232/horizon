@@ -32,10 +32,7 @@ object BuildSettings {
   val scalaVsn = "2.10.4"
   val stingrayNexusHost = "http://stingray-nexus.stratus.dev.ebay.com"
   private val gitDir = new File(".", ".git")
-  private val repo = new FileRepositoryBuilder().setGitDir(gitDir)
-    .readEnvironment() // scan environment GIT_* variables
-    .findGitDir() // scan up the file system tree
-    .build()
+  private val repo = FileRepositoryBuilder.create(gitDir)
   private val originUrl = repo.getConfig.getString("remote", "origin", "url")
   private def extractDirStructure(str: String): String = {
     val gitRemoved = str.replace(".git", "")
@@ -105,15 +102,15 @@ object BuildSettings {
     addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.2"),
     addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.2" exclude("com.typesafe.sbt", "sbt-git")),
     addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.7.0"),
-    addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.6.5-stingray"),
+    addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.6.4" exclude ("org.eclipse.jgit", "org.eclipse.jgit")),
     addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.0"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit" % "org.eclipse.jgit" % "3.3.0.201403021825-r",
       "org.specs2" %% "specs2" % "2.3.11" % "test"
     ),
-    publishTo <<= version { version: String =>
+    publishTo := {
       val stingrayNexus = s"$stingrayNexusHost/nexus/content/repositories/"
-      val publishFolder = if(version.trim.endsWith("SNAPSHOT")) "snapshots" else "releases"
+      val publishFolder = if (isSnapshot.value) "snapshots" else "releases"
       Some(publishFolder at stingrayNexus + s"$publishFolder/")
     }
   )

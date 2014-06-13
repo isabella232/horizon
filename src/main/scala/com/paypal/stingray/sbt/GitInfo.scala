@@ -5,6 +5,8 @@ import org.eclipse.jgit.api.Git
 
 /**
  * Provides access to Git repository information for the current build.
+ *
+ * Method `gitProperties` provides a sequence of properties in the form of (key -> value) tuples. See method for usage.
  */
 trait GitInfo {
 
@@ -12,10 +14,14 @@ trait GitInfo {
    * Used to access repository properties for current build.
    *
    * Properties returned include:
-   *  Branch name
-   *  Whether the current branch has uncommitted changes or not
-   *  Commit SHA
-   *  Date and time of commit
+   *
+   *  - git.branch - Branch name
+   *
+   *  - git.branch.clean Whether the current branch has uncommitted changes or not
+   *
+   *  - git.commit.sha - Commit SHA
+   *
+   *  - git.commit.date - Date and time of commit
    *
    * @return a sequence of properties for the current repository
    */

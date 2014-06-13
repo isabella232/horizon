@@ -38,15 +38,15 @@ trait CommonContext {
 object ChangelogReleaseSteps extends CommonContext {
   import BuildUtilitiesKeys._
 
-  case class ChangelogInfo(msg: String, author: String)
+  private case class ChangelogInfo(msg: String, author: String)
 
-  val ChangelogInfoMissingMessage = "You must provide a changelog message and author"
-  val ChangelogUpdateMessage = "There was an error writing to the changelog: "
-  val ChangelogCommitMessage = "There was an error committing the changelog: "
+  private val ChangelogInfoMissingMessage = "You must provide a changelog message and author"
+  private val ChangelogUpdateMessage = "There was an error writing to the changelog: "
+  private val ChangelogCommitMessage = "There was an error committing the changelog: "
 
-  class ChangelogInfoMissingException(e: Throwable) extends Exception(e)
-  class ChangelogUpdateException(e: Throwable) extends Exception(e)
-  class ChangelogCommitException(e: Throwable) extends Exception(e)
+  private class ChangelogInfoMissingException(e: Throwable) extends Exception(e)
+  private class ChangelogUpdateException(e: Throwable) extends Exception(e)
+  private class ChangelogCommitException(e: Throwable) extends Exception(e)
 
   /**
    * Checks to see if mandatory author and message arguments are specified during release.
@@ -131,7 +131,9 @@ object ChangelogReleaseSteps extends CommonContext {
 }
 
 /**
- * Includes a release step `generateReadme` which creates a `README.md` from a template.
+ * Includes a release step `generateReadme` which creates a `README.md` from a template and commits the file.
+ *
+ * To manually generate the readme (no commit), a custom sbt task is available. Run via `sbt gen-readme`.
  *
  * By default, the template file is called `Readme-Template.md`, and it generates a file named `README.md`.
  * Customize these using the `readmeTemplate` and `readme` settings defined in CustomReleaseStepsKeys.
@@ -153,12 +155,15 @@ object ChangelogReleaseSteps extends CommonContext {
 object ReadmeReleaseSteps extends CommonContext {
   import BuildUtilitiesKeys._
 
-  val ReadmeGenerateMessage = "There was an error generating the readme: "
-  val ReadmeCommitMessage = "There was an error committing the readme: "
+  private val ReadmeGenerateMessage = "There was an error generating the readme: "
+  private val ReadmeCommitMessage = "There was an error committing the readme: "
 
-  class ReadmeGenerateException(e: Throwable) extends Exception(e)
-  class ReadmeCommitException(e: Throwable) extends Exception(e)
+  private class ReadmeGenerateException(e: Throwable) extends Exception(e)
+  private class ReadmeCommitException(e: Throwable) extends Exception(e)
 
+  /**
+   * Release step which generates the readme from the template followed by committing the changes.
+   */
   lazy val generateReadme: ReleaseStep = { st: State =>
 
     try {
@@ -173,6 +178,9 @@ object ReadmeReleaseSteps extends CommonContext {
     }
   }
 
+  /**
+   * sbt task implementation (gen-readme) to generate the readme from the template.
+   */
   def genReadmeTask: Def.Initialize[Task[Unit]] = (readme, readmeTemplate, readmeTemplateMappings).map { (readmeFile, templateFile, templateMappings) =>
     try {
       val template = Source.fromFile(templateFile).mkString
@@ -214,6 +222,9 @@ object ReadmeReleaseSteps extends CommonContext {
  */
 object ScaladocReleaseSteps extends CommonContext {
 
+  /**
+   * Executes the `makeSite` sbt-site task, followed by the `pushSite` sbt-ghpages task.
+   */
   lazy val generateAndPushDocs: ReleaseStep = { st: State =>
     val st2 = executeTask(makeSite, "Making doc site")(st)
     executeTask(pushSite, "Publishing doc site")(st2)
