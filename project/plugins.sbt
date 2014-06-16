@@ -14,6 +14,6 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.2" exclude("com.typesafe.
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.7.0")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.6.5-stingray")
+addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.6.4")
 
 addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.0")

@@ -14,7 +14,8 @@ class ChangelogReleaseStepsSpec extends Specification with ScalaCheck { override
 
   case class CheckForChangelogNoProps() {
     def ok = {
-      checkForChangelog.action(null) should throwAn[RuntimeException](ChangelogInfoMissingMessage)
+      def msg = "You must provide a changelog message and author"
+      checkForChangelog.action(null) should throwAn[RuntimeException](msg)
     }
   }
 
