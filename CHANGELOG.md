@@ -1,4 +1,7 @@
 
+# 0.6.0 6/18/14 released by mvaznaian
+* Replace custom sbt-git with official v0.6.4
+
 # 0.5.0 6/3/14 released by mvaznaian
 * Add generateReadme release step
 * Add gen-readme sbt task
