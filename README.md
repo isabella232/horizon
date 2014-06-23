@@ -1,9 +1,9 @@
 sbt-build-utilities
 ===================
 
-Current Version: 0.6.0
+Current Version: 0.6.1
 
-[View the ScalaDocs](https://github.paypal.com/pages/Paypal-Commons-R/sbt-build-utilities/api/0.6.0/index.html#com.paypal.stingray.sbt.package)
+[View the ScalaDocs](https://github.paypal.com/pages/Paypal-Commons-R/sbt-build-utilities/api/0.6.1/index.html#com.paypal.stingray.sbt.package)
 
 The Build Utilities plugin was designed so common build settings can be imported via an sbt plugin rather than having to copy code in every new project's build file.
 
@@ -11,7 +11,7 @@ The Build Utilities plugin was designed so common build settings can be imported
 
 In **project/plugins.sbt**, add:
 
-`addSbtPlugin("com.paypal.stingray" % "sbt-build-utilities" % "0.6.0")`
+`addSbtPlugin("com.paypal.stingray" % "sbt-build-utilities" % "0.6.1")`
 
 In **project/Build.scala**, add:
 
