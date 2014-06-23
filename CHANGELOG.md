@@ -1,4 +1,7 @@
 
+# 0.6.1 6/23/14 released by awharris
+* Update specs2 to 2.3.12
+
 # 0.6.0 6/18/14 released by mvaznaian
 * Replace custom sbt-git with official v0.6.4
 
