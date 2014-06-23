@@ -106,7 +106,7 @@ object BuildSettings {
     addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.0"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit" % "org.eclipse.jgit" % "3.3.0.201403021825-r",
-      "org.specs2" %% "specs2" % "2.3.11" % "test"
+      "org.specs2" %% "specs2" % "2.3.12" % "test"
     ),
     publishTo := {
       val stingrayNexus = s"$stingrayNexusHost/nexus/content/repositories/"
