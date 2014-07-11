@@ -1,3 +1,5 @@
+# 0.7.0 07/11/14 released by Taylor
+* Add findManagedDependency for use with apiMappings
 
 # 0.6.1 6/23/14 released by awharris
 * Update specs2 to 2.3.12
