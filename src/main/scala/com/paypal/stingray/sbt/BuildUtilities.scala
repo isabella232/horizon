@@ -130,6 +130,39 @@ object BuildUtilities extends Plugin with GitInfo {
     pushChanges
   )
 
+  /**
+   * Finds the managed dependency for use with sbt api mappings.
+   *
+   * @param organization the module organization
+   * @param name the module name
+   * @return the managed dependency
+   *
+   * @example
+   * {{{
+   *   apiMappings ++= {
+   *     import BuildUtilities._
+   *     val links = Seq(
+   *       findManagedDependency("org.scala-lang", "scala-library").value.map(d => d -> url(s"http://www.scala-lang.org/api/$scalaVsn/")),
+   *       findManagedDependency("com.typesafe.akka", "akka-actor").value.map(d => d -> url(s"http://doc.akka.io/api/akka/$akkaVersion/")),
+   *       findManagedDependency("com.typesafe", "config").value.map(d => d -> url("http://typesafehub.github.io/config/latest/api/")),
+   *       findManagedDependency("org.slf4j", "slf4j-api").value.map(d => d -> url("http://www.slf4j.org/api/")),
+   *       findManagedDependency("com.typesafe.akka", "akka-testkit").value.map(d => d -> url(s"http://doc.akka.io/api/akka/$akkaVersion/")),
+   *       findManagedDependency("org.specs2", "specs2").value.map(d => d -> url(s"http://etorreborre.github.io/specs2/api/SPECS2-$specs2Version/"))
+   *     )
+   *     links.collect { case Some(d) => d }.toMap
+   *   }
+   * }}}
+   */
+  def findManagedDependency(organization: String, name: String): Def.Initialize[Task[Option[File]]] = {
+    Def.task {
+      val artifacts = for {
+        entry <- (fullClasspath in Runtime).value ++ (fullClasspath in Test).value
+        module <- entry.get(moduleID.key) if module.organization == organization && module.name.startsWith(name)
+      } yield entry.data
+      artifacts.headOption
+    }
+  }
+
   private val gitDir = new File(".", ".git")
   private val repo = FileRepositoryBuilder.create(gitDir)
   private val originUrl = repo.getConfig.getString("remote", "origin", "url")
