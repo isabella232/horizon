@@ -1,4 +1,4 @@
-# 0.7.0 07/11/14 released by Taylor
+# 0.7.0 07/14/14 released by tleese
 * Add findManagedDependency for use with apiMappings
 
 # 0.6.1 6/23/14 released by awharris
