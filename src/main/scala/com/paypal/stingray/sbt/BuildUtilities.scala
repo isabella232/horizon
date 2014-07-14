@@ -153,11 +153,14 @@ object BuildUtilities extends Plugin with GitInfo {
    *   }
    * }}}
    */
-  def findManagedDependency(organization: String, name: String): Def.Initialize[Task[Option[File]]] = Def.task {
-    (for {
-      entry <- (fullClasspath in Runtime).value ++ (fullClasspath in Test).value
-      module <- entry.get(moduleID.key) if module.organization == organization && module.name.startsWith(name)
-    } yield entry.data).headOption
+  def findManagedDependency(organization: String, name: String): Def.Initialize[Task[Option[File]]] = {
+    Def.task {
+      val artifacts = for {
+        entry <- (fullClasspath in Runtime).value ++ (fullClasspath in Test).value
+        module <- entry.get(moduleID.key) if module.organization == organization && module.name.startsWith(name)
+      } yield entry.data
+      artifacts.headOption
+    }
   }
 
   private val gitDir = new File(".", ".git")
