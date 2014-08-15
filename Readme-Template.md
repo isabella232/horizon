@@ -1,5 +1,4 @@
-PayPal Stingray sbt-build-utilities
-===================================
+# Nugget
 
 Current Version: {{version}}
 
@@ -7,10 +6,15 @@ Current Version: {{version}}
 
 [View the Changelog](https://github.paypal.com/Paypal-Commons-R/sbt-build-utilities/blob/develop/CHANGELOG.md)
 
+Cascade is a collection of libraries that implement common patterns, convenience objects, implicit classes, utilities, and other foundational pieces used in Scala applications and servers at PayPal. 
 
-The Build Utilities plugin was designed so common build settings can be reused via an sbt plugin rather than having to copy code into every new project's build file.
 
-## How to Include In Project
+Nugget, an sbt plugin, was designed so common build settings can be reused via an sbt plugin for Scala applications. The plugin herein is carefully designed to:
+
+* Work well with Scala and the Typesafe libraries.
+* Be well defined in its functionality.
+
+# Usage
 
 In **project/plugins.sbt**, add:
 
@@ -22,13 +26,13 @@ After re-compiling to download the lib, in **project/Build.scala**, add:
 
 This will give you access to the main build settings offered by this plugin.
 
-## What's Included
+# Plugin Details
 
-### Plugin Dependencies
+## Dependencies
 
 The build utilities plugin depends on several other sbt plugins. In addition to offering customized settings for the features of these plugins, you'll have full access to all of the plugins and settings as well. To access a plugin's settings, add the appropriate imports, which can be found via the plugins' documentation. Below are the plugins and common imports statements for access to settings:
 
-#### sbt-release
+### sbt-release
 
 [sbt-release](https://github.com/sbt/sbt-release) provides a customizable release process for automating releases. `sbt-build-utilties` defines a `defaultReleaseProcess` that mixes standard release steps from `sbt-release` like testing and publishing artifacts with customized release steps like updating the readme and generating Scala docs. See below.
 
@@ -39,7 +43,7 @@ Common imports:
 * import sbtrelease.ReleasePlugin._
 * import sbtrelease.ReleaseKeys._
 
-#### sbt-ghpages
+### sbt-ghpages
 
 [sbt-ghpages](https://github.com/sbt/sbt-ghpages) provides commands to easily push a created "site" to the gh-pages branch of the repository.
 
@@ -50,7 +54,7 @@ Common imports:
 * import com.typesafe.sbt.SbtGhPages._
 * import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
 	
-#### sbt-site
+### sbt-site
 
 [sbt-site](https://github.com/sbt/sbt-site) provides commands to create a project site for publishing, and includes commands for auto doc generation.
 
@@ -61,7 +65,7 @@ Common imports:
 * import com.typesafe.sbt.SbtSite._
 * import com.typesafe.sbt.SbtSite.SiteKeys._
 
-#### sbt-unidoc
+### sbt-unidoc
 
 [sbt-unidoc](https://github.com/sbt/sbt-unidoc) works with `sbt-site` to combine multiple sub-projects into one. This is useful so we end up with one Scala doc site instead of multiple. See docs for how to exclude projects if needed.
 
@@ -69,7 +73,7 @@ Common imports:
 
 * import sbtunidoc.Plugin._
 
-#### sbt-git
+### sbt-git
 
 [sbt-git](https://github.com/sbt/sbt-git) is mainly used to set the `gitRemoteRepo` setting, so the other doc-related plugins know the url to push to.
 
@@ -78,7 +82,7 @@ Common imports:
 * import com.typesafe.sbt.SbtGit._
 * import com.typesafe.sbt.SbtGit.GitKeys._
 	
-### BuildUtilitiesKeys
+## BuildUtilitiesKeys
 
 These are static keys/values used in various settings throughout the plugin. They all have defaults and can be customized as needed.
 
@@ -93,11 +97,11 @@ This will overwrite the default.
 
 [View the list of build utility keys](https://github.paypal.com/pages/Paypal-Commons-R/sbt-build-utilities/api/{{version}}/index.html#com.paypal.stingray.sbt.BuildUtilitiesKeys$)
 
-### BuildUtilities
+## BuildUtilities
 
 `BuildUtilities` is the primary plugin object used to access the main utilities.
 
-#### utilitySettings
+### utilitySettings
 
 Add this to the sequence of your project's settings. It combines `sbt-unidoc`, `sbt-site`, and the `sbt-ghpages` settings. It also sets the following additional settings:
 
@@ -130,7 +134,7 @@ lazy val parent = Project("parent", file("."),
 )
 ```
 
-#### defaultReleaseProcess
+### defaultReleaseProcess
 
 Defines a set of release steps for use with the `sbt-release` plugin. To include `sbt-release` in your project:
 
@@ -165,7 +169,7 @@ Caveats: The `defaultReleaseProcess` depends on adding `utilitySettings` to buil
 
 
 
-#### findManagedDependencies
+### findManagedDependencies
 
 Finds the managed dependency for use with sbt api mappings. Used in the `apiMappings` build setting.
 
@@ -186,7 +190,7 @@ apiMappings ++= {
 }
 ```
 
-### GitInfo
+## GitInfo
 
 `GitInfo` is a trait which defines the `gitProperties` method. This method pulls specific git information for the current repository into a key/value sequence. You can use these key/value pairs to extract information for the current build. The current keys include:
 
@@ -197,11 +201,11 @@ apiMappings ++= {
 
 ADD DESCRIPTION OF COMMON STATUS ENDPOINT INTEGRATION.
 
-### CustomReleaseSteps
+## CustomReleaseSteps
 
 Defines custom release steps which are included in the `defaultReleaseProcess` variable.
 
-#### ChangelogReleaseSteps
+### ChangelogReleaseSteps
 
 [View the Scaladocs](https://github.paypal.com/pages/Paypal-Commons-R/sbt-build-utilities/api/{{version}}/#com.paypal.stingray.sbt.ChangelogReleaseSteps$)
 
@@ -214,7 +218,7 @@ Defines custom release steps which are included in the `defaultReleaseProcess` v
 * Add findManagedDependency for use with apiMappings
 ```
 
-#### ReadmeReleaseSteps
+### ReadmeReleaseSteps
 
 [View the Scaladocs](https://github.paypal.com/pages/Paypal-Commons-R/sbt-build-utilities/api/{{version}}/#com.paypal.stingray.sbt.ReadmeReleaseSteps$)
 
@@ -240,7 +244,7 @@ In addition, any instance of `{{auto-gen}}` in the template will get replaced wi
 
 This can be useful to include so others changes are not overwritten if they edit the readme directly.
 
-#### ScaladocReleaseSteps
+### ScaladocReleaseSteps
 
 [View the Scaladocs](https://github.paypal.com/pages/Paypal-Commons-R/sbt-build-utilities/api/{{version}}/#com.paypal.stingray.sbt.ScaladocReleaseSteps$)
 
