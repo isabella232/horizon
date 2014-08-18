@@ -192,11 +192,13 @@ apiMappings ++= {
 `GitInfo` is a trait which defines the `gitProperties` method. This method pulls specific git information for the current repository into a key/value sequence. You can use these key/value pairs to extract information for the current build. The current keys include:
 
 * git.branch - Branch name.
-* git.branch.clean - Whether the current branch has uncommited changes or not.
+* git.branch.clean - Whether the current branch has uncommitted changes or not.
 * git.commit.sha - Most recent commit SHA.
 * git.commit.date - Date and time of most recent commit.
 
-ADD DESCRIPTION OF COMMON STATUS ENDPOINT INTEGRATION.
+A good example of how this method is used can be found in [cascade-http](https://github.paypal.com/Paypal-Commons-R/stingray-common/blob/develop/README.md#http), a sub-project of PayPal's bigger [Cascade](https://github.paypal.com/Paypal-Commons-R/stingray-common/blob/develop/README.md) project, a collection of libraries that implement common patterns and utilities for Scala applications.
+The `cascade-http` library provides the `/status` endpoint out of the box. This endpoint returns useful build information for your project, including the service name, dependencies, and git branch and commit information, which is directly provided by this plugin. See the documentation for more details.
+
 
 ## CustomReleaseSteps
 
