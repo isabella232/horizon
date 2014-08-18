@@ -6,9 +6,6 @@ Current Version: {{version}}
 
 [View the Changelog](https://github.paypal.com/Paypal-Commons-R/sbt-build-utilities/blob/develop/CHANGELOG.md)
 
-Cascade is a collection of libraries that implement common patterns, convenience objects, implicit classes, utilities, and other foundational pieces used in Scala applications and servers at PayPal. 
-
-
 Nugget, an sbt plugin, was designed so common build settings can be reused via an sbt plugin for Scala applications. The plugin herein is carefully designed to:
 
 * Work well with Scala and the Typesafe libraries.
@@ -20,7 +17,7 @@ In **project/plugins.sbt**, add:
 
 `addSbtPlugin("com.paypal.stingray" % "sbt-build-utilities" % "{{version}}")`
 
-After re-compiling to download the lib, in **project/Build.scala**, add:
+After re-compiling to include the dependency, in **project/Build.scala**, add:
 
 `import com.paypal.stingray.sbt.BuildUtilities._`
 
@@ -148,22 +145,22 @@ releaseProcess := BuildUtilities.defaultReleaseProcess
 
 Release Order:
 
-The following steps are executed in order, and if any of the following steps fail, the release will stop.
+The following steps are executed in order, and if any of the following steps fail, the release will stop. The methods which implement the logic are provided in paretheses.
 
-1. checkSnapshotDependencies - checks dependencies
-2. inquireVersions - gets release version and figures out next version
-3. checkForChangelog - checks that system properties changelog.msg and changelog.author have been set
-4. runTest - run tests
-5. setReleaseVersion - sets the release version (removes the SNAPSHOT part)
-6. commitReleaseVersion - commits the release version
-7. updateChangelog - updates the changelog entry for this release version and commits the change
-8. generateReadme - generates `README.md` file from `Readme-Template.md`, substituting `{{key}}` with associated value according to the `readmeTemplateMappings` settings
-9. tagRelease - tags the release
-10. publishArtifacts - publishes artifacts to specified location
-11. generateAndPushDocs - generates ScalaDocs and pushes to the gh-pages branch
-12. setNextVersion - sets the next snapshot version
-13. commitNextVersion - commits the next snapshot version
-14. pushChanges - pushes all commits created by this process
+1. Check dependencies. (checkSnapshotDependencies)
+2. Get release version and determine next version. (inquireVersions)
+3. Check that system properties changelog.msg and changelog.author have been set. (checkForChangelog)
+4. Run tests. (runTest)
+5. Set the release version (removes the SNAPSHOT part). (setReleaseVersion)
+6. Commit the release version. (commitReleaseVersion - commits)
+7. Update the changelog entry for this release version and commit the changes. (updateChangelog)
+8. Generate `README.md` file from `Readme-Template.md`, substituting `{{key}}` with associated value according to the `readmeTemplateMappings` settings. (generateReadme)
+9. Tag the release. (tagRelease)
+10. Publish artifacts to specified location. (publishArtifacts)
+11. Generate ScalaDocs and push to the gh-pages branch. (generateAndPushDocs)
+12. Set the next snapshot version. (setNextVersion)
+13. Commit the next snapshot version. (commitNextVersion)
+14. Push all commits created by this process. (pushChanges)
 
 Caveats: The `defaultReleaseProcess` depends on adding `utilitySettings` to build settings in order to complete the `generateAndPushDocs` release step. The readme release step depends on `Readme-Template.md` file, from which the README.md file is produced. Override setting if file is named differently.
 
