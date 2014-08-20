@@ -43,9 +43,9 @@ object BuildSettings {
   import AdditionalReleaseSteps._
   import BuildUtilitiesKeys._
 
-  val org = "com.paypal.stingray"
+  val org = "com.paypal.horizon"
   val scalaVsn = "2.10.4"
-  val stingrayNexusHost = "http://stingray-nexus.stratus.dev.ebay.com"
+  val nexusHost = "https://oss.sonatype.org/"
   private val gitDir = new File(".", ".git")
   private val repo = FileRepositoryBuilder.create(gitDir)
   private val originUrl = repo.getConfig.getString("remote", "origin", "url")
@@ -110,7 +110,7 @@ object BuildSettings {
     fork := true,
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     scalacOptions in Test ++= Seq("-Yrangepos"),
-    resolvers += "Stingray Nexus" at s"$stingrayNexusHost/nexus/content/groups/public/",
+    resolvers += "releases" at s"$nexusHost/service/local/staging/deploy/maven2/",
     dependencyOverrides <++= scalaVersion { vsn => Set(
       "org.scala-lang" % "scala-library"  % vsn,
       "org.scala-lang" % "scala-compiler" % vsn
@@ -125,9 +125,9 @@ object BuildSettings {
       "org.specs2" %% "specs2" % "2.3.12" % "test"
     ),
     publishTo := {
-      val stingrayNexus = s"$stingrayNexusHost/nexus/content/repositories/"
+      val nexus = s"$nexusHost/service/local/staging/deploy/maven2/"
       val publishFolder = if (isSnapshot.value) "snapshots" else "releases"
-      Some(publishFolder at stingrayNexus + s"$publishFolder/")
+      Some(publishFolder at nexus + s"$publishFolder/")
     }
   )
 }
