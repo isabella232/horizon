@@ -1,4 +1,4 @@
-# Nugget
+# Horizon
 
 Current Version: {{version}}
 
@@ -6,7 +6,7 @@ Current Version: {{version}}
 
 [View the Changelog](https://github.paypal.com/Paypal-Commons-R/sbt-build-utilities/blob/develop/CHANGELOG.md)
 
-Nugget, an sbt plugin, was designed so common build settings can be reused via an sbt plugin for Scala applications. The plugin herein is carefully designed to:
+Horizon is an sbt plugin designed to house common build settings for Scala applications. It's carefully designed to:
 
 * Work well with Scala and the Typesafe libraries.
 * Be well defined in its functionality.
