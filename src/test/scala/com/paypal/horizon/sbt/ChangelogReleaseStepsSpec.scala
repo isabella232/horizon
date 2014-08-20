@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.paypal.stingray.sbt
+package com.paypal.horizon.sbt
 
 import org.specs2._
+import com.paypal.horizon.sbt.ChangelogReleaseSteps._
+import java.lang.RuntimeException
 
 /**
- * Tests [[com.paypal.stingray.sbt.GitInfo]] trait
+ * Tests update and commit release steps in [[com.paypal.horizon.sbt.ChangelogReleaseSteps]]
  */
-class GitInfoSpecs extends Specification { override def is = s2"""
-
-  gitProperties correctly returns keys and info                 ${GitProps().ok}
+class ChangelogReleaseStepsSpec extends Specification with ScalaCheck { override def is = s2"""
+  checkForChangelog without properties should return exception    ${CheckForChangelogNoProps().ok}
 
 """
 
-  case class GitProps() {
+  case class CheckForChangelogNoProps() {
     def ok = {
-      val repo = new GitInfo { }
-      val repoInfo = repo.gitProperties
-      (repoInfo.length must beEqualTo(4)) and
-        (repoInfo must haveKeys[String]("git.branch", "git.branch.clean", "git.commit.sha", "git.commit.date"))
+      def msg = "You must provide a changelog message and author"
+      checkForChangelog.action(null) should throwAn[RuntimeException](msg)
     }
   }
 

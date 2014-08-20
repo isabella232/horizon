@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.paypal.stingray.sbt
+package com.paypal.horizon.sbt
 
 import sbt._
 import sbt.Keys._
@@ -68,12 +68,12 @@ object BuildUtilitiesKeys {
 /**
  * Primary plugin object used to access all major build utilities.
  *
- * Mixes in [[com.paypal.stingray.sbt.GitInfo]], a trait which can be used to access Git repository information for the current build.
+ * Mixes in [[com.paypal.horizon.sbt.GitInfo]], a trait which can be used to access Git repository information for the current build.
  *
  * To access add the following import statement:
  *
  * {{{
- *   import com.paypal.stingray.sbt.BuildUtilities._
+ *   import com.paypal.horizon.sbt.BuildUtilities._
  * }}}
  *
  */
