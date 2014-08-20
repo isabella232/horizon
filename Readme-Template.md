@@ -50,14 +50,14 @@ Common imports:
 
 * import com.typesafe.sbt.SbtGhPages._
 * import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
-	
+
 ### sbt-site
 
 [sbt-site](https://github.com/sbt/sbt-site) provides commands to create a project site for publishing, and includes commands for auto doc generation.
 
-Using this plugin's settings, the command `$ sbt preview-site` will generate a temporary site of the Scala docs, useful to preview before you actually push. The command `$ sbt make site` will generate the site. 
+Using this plugin's settings, the command `$ sbt preview-site` will generate a temporary site of the Scala docs, useful to preview before you actually push. The command `$ sbt make site` will generate the site.
 
-Common imports: 
+Common imports:
 
 * import com.typesafe.sbt.SbtSite._
 * import com.typesafe.sbt.SbtSite.SiteKeys._
@@ -78,7 +78,7 @@ Common imports:
 
 * import com.typesafe.sbt.SbtGit._
 * import com.typesafe.sbt.SbtGit.GitKeys._
-	
+
 ## BuildUtilitiesKeys
 
 These are static keys/values used in various settings throughout the plugin. They all have defaults and can be customized as needed.
@@ -223,7 +223,7 @@ Defines custom release steps which are included in the `defaultReleaseProcess` v
 
 * `generateReadme` - Generates the readme based on the readme template, and commits the changes to the VCS. By default, the readme file is set to `README.md` and the template file is set to `Readme-Template.md`. The template file can include placeholder words wrapped in `{{...}}` which will be filled in during generation. These placeholders are defined by the `readmeTemplateMappings` setting. It is currently defined as:
 
-``` 
+```
 readmeTemplateMappings <<= (version in ThisBuild) { ver =>
   Map("version" -> ver)
 }
@@ -247,12 +247,33 @@ This can be useful to include so others changes are not overwritten if they edit
 
 [View the Scaladocs](https://github.paypal.com/pages/Paypal-Commons-R/sbt-build-utilities/api/{{version}}/#com.paypal.stingray.sbt.ScaladocReleaseSteps$)
 
-* `generateAndPushDocs` - This uses features from the `sbt-site`, `sbt-unidoc`, and `sbt-ghpages` plugins to generate Scaladocs and push them to the public gh-pages branch of your project's repository. This release step executes the `make-site` sbt task, followed by the `push-site` sbt task. By default, the docs will be pushed to `/api/$version`. Override the `siteMappings` setting to change. 
+* `generateAndPushDocs` - This uses features from the `sbt-site`, `sbt-unidoc`, and `sbt-ghpages` plugins to generate Scaladocs and push them to the public gh-pages branch of your project's repository. This release step executes the `make-site` sbt task, followed by the `push-site` sbt task. By default, the docs will be pushed to `/api/$version`. Override the `siteMappings` setting to change.
 
 NOTE: Make sure the gh-pages branch already exists before using this release step. See the [github documentation](https://help.github.com/articles/creating-project-pages-manually#create-a-gh-pages-branch) for more information.
 
+# Contributing
+
+We accept and look at all contributions to this project. If you find a bug or want to see a new feature,
+[submit an issue](https://github.com/paypal/horizon/issues). Otherwise, if you want to contribute code,
+[fork this repository](https://github.com/paypal/horizon/fork) and submit a pull request against the `develop` branch.
+
+## Bugs
+
+If you create a new issue for a bug, please include as many repro steps as possible.
+
+If you create a pull request, please follow the following rules:
+
+1. If it fixes an existing GH issue, add `Fixes #123` is in at least one of the commit comments in the PR branch.
+2. If it doesn't fix an existing GH issue, describe the issue in the PR comments.
+
+## Features
+
+The code we've committed here solves the problems that we've seen at PayPal but we want to add new features
+that solve others' problems. We're generally looking for code that automates common (tedious) tasks,
+reduce or eliminate cognitive load or context switching, or just solves some annoying problem for developers
+using SBT.
+
+We're intentionally leaving the door open for a wide variety of ideas so we (the community) can discuss
+in the GH issue or PR.
 
 {{auto-gen}}
-
-
-
