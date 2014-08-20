@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.paypal.horizon.sbt
+package com.paypal.horizon
 
 import sbt._
 import sbt.Keys._

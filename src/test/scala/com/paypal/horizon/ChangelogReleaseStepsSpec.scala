@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.paypal.horizon.sbt
+package com.paypal.horizon
 
 import org.specs2._
-import com.paypal.horizon.sbt.ChangelogReleaseSteps._
+import com.paypal.horizon.ChangelogReleaseSteps._
 import java.lang.RuntimeException
 
 /**
