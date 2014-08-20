@@ -263,7 +263,7 @@ If you create a new issue for a bug, please include as many repro steps as possi
 
 If you create a pull request, please follow the following rules:
 
-1. If it fixes an existing GH issue, add `Fixes #123` is in at least one of the commit comments in the PR.
+1. If it fixes an existing GH issue, add `Fixes #123` is in at least one of the commit comments in the PR branch.
 2. If it doesn't fix an existing GH issue, describe the issue in the PR comments.
 
 ## Features
