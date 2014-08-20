@@ -253,9 +253,12 @@ NOTE: Make sure the gh-pages branch already exists before using this release ste
 
 # Contributing
 
-We accept and look at all contributions to this project. If you find a bug or want to see a new feature,
-[submit an issue](https://github.com/paypal/horizon/issues). Otherwise, if you want to contribute code,
-[fork this repository](https://github.com/paypal/horizon/fork) and submit a pull request against the `develop` branch.
+We accept and look at all contributions to this project. If you find a bug or
+want to see a new feature,
+[submit an issue](https://github.com/paypal/horizon/issues). Otherwise, if you
+want to contribute code,
+[fork this repository](https://github.com/paypal/horizon/fork) and submit a
+pull request (PR) against the `develop` branch.
 
 ## Bugs
 
@@ -263,17 +266,23 @@ If you create a new issue for a bug, please include as many repro steps as possi
 
 If you create a pull request, please follow the following rules:
 
-1. If it fixes an existing GH issue, add `Fixes #123` is in at least one of the commit comments in the PR branch.
+1. If it fixes an existing GH issue, add `Fixes #123` is in the PR description
+or one (or more) of the commits in the PR. You can fix multiple bugs from
+a single PR, but keep them focused to one subject.
 2. If it doesn't fix an existing GH issue, describe the issue in the PR comments.
 
 ## Features
 
-The code we've committed here solves the problems that we've seen at PayPal but we want to add new features
-that solve others' problems. We're generally looking for code that automates common (tedious) tasks,
-reduce or eliminate cognitive load or context switching, or just solves some annoying problem for developers
+The code we've committed here solves the problems that we've seen at PayPal but
+we want to add new features that solve others' problems. We're generally looking
+for code that automates common (tedious) tasks, reduce or eliminate cognitive
+load or context switching, or just solves some annoying problem for developers
 using SBT.
 
 We're intentionally leaving the door open for a wide variety of ideas so we (the community) can discuss
 in the GH issue or PR.
+
+If you create a PR, please follow the same process as above for referencing the
+appropriate GH issue (if any).
 
 {{auto-gen}}
