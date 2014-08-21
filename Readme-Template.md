@@ -255,8 +255,10 @@ NOTE: Make sure the gh-pages branch already exists before using this release ste
 
 We accept and look at all contributions to this project. If you find a bug or
 want to see a new feature,
-[submit an issue](https://github.com/paypal/horizon/issues). Otherwise, if you
-want to contribute code,
+[submit an issue](https://github.com/paypal/horizon/issues).
+
+Otherwise, if you want to contribute code,
+[setup your development environment](DEVELOPMENT_SETUP.md), then
 [fork this repository](https://github.com/paypal/horizon/fork) and submit a
 pull request (PR) against the `develop` branch.
 
