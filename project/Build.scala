@@ -43,9 +43,9 @@ object BuildSettings {
   import AdditionalReleaseSteps._
   import BuildUtilitiesKeys._
 
-  val org = "com.paypal.horizon"
+  val org = "com.paypal"
   val scalaVsn = "2.10.4"
-  val nexusHost = "https://oss.sonatype.org/"
+  val nexusHost = "https://oss.sonatype.org"
   private val gitDir = new File(".", ".git")
   private val repo = FileRepositoryBuilder.create(gitDir)
   private val originUrl = repo.getConfig.getString("remote", "origin", "url")
@@ -103,7 +103,7 @@ object BuildSettings {
 
   lazy val standardSettings = standardPluginSettings ++ Seq(
     organization := org,
-    name := "sbt-build-utilities",
+    name := "horizon",
     scalaVersion := scalaVsn,
     sbtPlugin := true,
     conflictManager := ConflictManager.strict,
@@ -125,10 +125,15 @@ object BuildSettings {
       "org.specs2" %% "specs2" % "2.3.12" % "test"
     ),
     publishTo := {
-      val nexus = s"$nexusHost/service/local/staging/deploy/maven2/"
-      val publishFolder = if (isSnapshot.value) "snapshots" else "releases"
-      Some(publishFolder at nexus + s"$publishFolder/")
-    }
+      val nexus = s"$nexusHost/"
+        if (isSnapshot.value) {
+            Some("snapshots" at nexus + "content/repositories/snapshots")
+        } else {
+            Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+        }
+    },
+    publishMavenStyle := true,
+    publishArtifact in Test := false
   )
 }
 
