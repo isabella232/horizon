@@ -1,3 +1,6 @@
+# 0.1.3 8/25/2014 released by arschles
+* Fixing a mistake in pomExtra in the Build.scala file.
+
 # 0.1.2 8/25/2014 released by arschles
 * Adding pomExtra, to satisfy maven central requirement
 
