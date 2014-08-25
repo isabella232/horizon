@@ -2,9 +2,9 @@
 
 Current Version: {{version}}
 
-[View the ScalaDocs](https://github.paypal.com/pages/Paypal-Commons-R/sbt-build-utilities/api/{{version}}/index.html#com.paypal.stingray.sbt.package)
+[View the ScalaDocs](https://paypal.github.com/horizon/api/{{version}}/index.html#com.paypal.horizon.package)
 
-[View the Changelog](https://github.paypal.com/Paypal-Commons-R/sbt-build-utilities/blob/develop/CHANGELOG.md)
+[View the Changelog](https://paypal.github.com/horizon/blob/develop/CHANGELOG.md)
 
 Horizon is an sbt plugin designed to house common build settings for Scala applications. It's carefully designed to:
 
@@ -92,7 +92,7 @@ changelog := "MyChangelog.txt"
 
 This will overwrite the default.
 
-[View the list of build utility keys](https://github.paypal.com/pages/Paypal-Commons-R/sbt-build-utilities/api/{{version}}/index.html#com.paypal.stingray.sbt.BuildUtilitiesKeys$)
+[View the list of build utility keys](https://paypal.github.com/horizon/api/{{version}}/index.html#com.paypal.horizon.BuildUtilitiesKeys$)
 
 ## BuildUtilities
 
@@ -196,7 +196,7 @@ apiMappings ++= {
 * git.commit.sha - Most recent commit SHA.
 * git.commit.date - Date and time of most recent commit.
 
-A good example of how this method is used can be found in [cascade-http](https://github.paypal.com/Paypal-Commons-R/stingray-common/blob/develop/README.md#http), a sub-project of PayPal's bigger [Cascade](https://github.paypal.com/Paypal-Commons-R/stingray-common/blob/develop/README.md) project, a collection of libraries that implement common patterns and utilities for Scala applications.
+A good example of how this method is used can be found in [cascade-http](https://github.com/paypal/cascade/blob/develop/README.md#http), a sub-project of PayPal's bigger [Cascade](https://github.com/paypal/cascade/blob/develop/README.md) project, a collection of libraries that implement common patterns and utilities for Scala applications.
 The `cascade-http` library provides the `/status` endpoint out of the box. This endpoint returns useful build information for your project, including the service name, dependencies, and git branch and commit information, which is directly provided by this plugin. See the documentation for more details.
 
 
@@ -206,7 +206,7 @@ Defines custom release steps which are included in the `defaultReleaseProcess` v
 
 ### ChangelogReleaseSteps
 
-[View the Scaladocs](https://github.paypal.com/pages/Paypal-Commons-R/sbt-build-utilities/api/{{version}}/#com.paypal.stingray.sbt.ChangelogReleaseSteps$)
+[View the Scaladocs](https://paypal.github.com/horizon/api/{{version}}/#com.paypal.horizon.ChangelogReleaseSteps$)
 
 * `checkForChangelog` - In order for the changelog to get updated, the system properties `changelog.msg` and `changelog.author` must be defined. These are typically defined by CI environment variables, etc. This release step checks to make sure these system properties are defined.
 
@@ -219,7 +219,7 @@ Defines custom release steps which are included in the `defaultReleaseProcess` v
 
 ### ReadmeReleaseSteps
 
-[View the Scaladocs](https://github.paypal.com/pages/Paypal-Commons-R/sbt-build-utilities/api/{{version}}/#com.paypal.stingray.sbt.ReadmeReleaseSteps$)
+[View the Scaladocs](https://paypal.github.com/horizon/api/{{version}}/#com.paypal.horizon.ReadmeReleaseSteps$)
 
 * `generateReadme` - Generates the readme based on the readme template, and commits the changes to the VCS. By default, the readme file is set to `README.md` and the template file is set to `Readme-Template.md`. The template file can include placeholder words wrapped in `{{...}}` which will be filled in during generation. These placeholders are defined by the `readmeTemplateMappings` setting. It is currently defined as:
 
@@ -245,7 +245,7 @@ This can be useful to include so others changes are not overwritten if they edit
 
 ### ScaladocReleaseSteps
 
-[View the Scaladocs](https://github.paypal.com/pages/Paypal-Commons-R/sbt-build-utilities/api/{{version}}/#com.paypal.stingray.sbt.ScaladocReleaseSteps$)
+[View the Scaladocs](https://paypal.github.com/horizon/api/{{version}}/#com.paypal.horizon.ScaladocReleaseSteps$)
 
 * `generateAndPushDocs` - This uses features from the `sbt-site`, `sbt-unidoc`, and `sbt-ghpages` plugins to generate Scaladocs and push them to the public gh-pages branch of your project's repository. This release step executes the `make-site` sbt task, followed by the `push-site` sbt task. By default, the docs will be pushed to `/api/$version`. Override the `siteMappings` setting to change.
 
