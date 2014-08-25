@@ -10,4 +10,4 @@ git branch -u origin/$RELEASE_BRANCH
 git pull
 git config branch.$RELEASE_BRANCH.remote origin
 git config branch.$RELEASE_BRANCH.merge refs/heads/$RELEASE_BRANCH
-sbt "release-cross with-defaults"
+sbt "release cross with-defaults"
