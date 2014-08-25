@@ -134,7 +134,7 @@ object BuildSettings {
     },
     publishMavenStyle := true,
     publishArtifact in Test := false,
-    pomExtra :=
+    pomExtra := (
         <url>https://github.com/paypal/horizon</url>
         <licenses>
             <license>
@@ -154,6 +154,7 @@ object BuildSettings {
                 <url>https://github.com/arschles</url>
             </developer>
         </developers>
+    )
   )
 }
 
