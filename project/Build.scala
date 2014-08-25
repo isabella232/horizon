@@ -133,7 +133,27 @@ object BuildSettings {
         }
     },
     publishMavenStyle := true,
-    publishArtifact in Test := false
+    publishArtifact in Test := false,
+    pomExtra :=
+        <url>https://github.com/paypal/horizon</url>
+        <licenses>
+            <license>
+                <name>Apache 2</name>
+                <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                <distribution>repo</distribution>
+            </license>
+        </licenses>
+        <scm>
+            <url>git@github.com:paypal/horizon.git</url>
+            <connection>scm:git:git@github.com:paypal/horizon.git</connection>
+        </scm>
+        <developers>
+            <developer>
+                <id>arschles</id>
+                <name>Aaron Schlesinger</name>
+                <url>https://github.com/arschles</url>
+            </developer>
+        </developers>
   )
 }
 
