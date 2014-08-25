@@ -1,3 +1,6 @@
+# 0.1.2 8/25/2014 released by arschles
+* Adding pomExtra, to satisfy maven central requirement
+
 # 0.1.1 8/25/2014 released by arschles
 * Further testing the release process.
 * Updating the readme template to point to correct URLs for Scaladoc API.
