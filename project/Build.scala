@@ -103,7 +103,7 @@ object BuildSettings {
 
   lazy val standardSettings = standardPluginSettings ++ Seq(
     organization := org,
-    name := "sbt-build-utilities",
+    name := "horizon",
     scalaVersion := scalaVsn,
     sbtPlugin := true,
     conflictManager := ConflictManager.strict,
@@ -128,7 +128,9 @@ object BuildSettings {
       val nexus = s"$nexusHost/service/local/staging/deploy/maven2/"
       val publishFolder = if (isSnapshot.value) "snapshots" else "releases"
       Some(publishFolder at nexus + s"$publishFolder/")
-    }
+    },
+    publishMavenStyle := true,
+    publishArtifact in Test := false
   )
 }
 
