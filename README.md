@@ -15,11 +15,11 @@ Horizon is an sbt plugin designed to house common build settings for Scala appli
 
 In **project/plugins.sbt**, add:
 
-`addSbtPlugin("com.paypal.stingray" % "sbt-build-utilities" % "0.1.3")`
+`addSbtPlugin("com.paypal" % "horizon" % "0.1.3")`
 
 After re-compiling to include the dependency, in **project/Build.scala**, add:
 
-`import com.paypal.stingray.sbt.BuildUtilities._`
+`import com.paypal.horizon.BuildUtilities._`
 
 This will give you access to the main build settings offered by this plugin.
 
