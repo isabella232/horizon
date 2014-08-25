@@ -43,7 +43,7 @@ object BuildSettings {
   import AdditionalReleaseSteps._
   import BuildUtilitiesKeys._
 
-  val org = "com.paypal.horizon"
+  val org = "com.paypal"
   val scalaVsn = "2.10.4"
   val nexusHost = "https://oss.sonatype.org/"
   private val gitDir = new File(".", ".git")
