@@ -1,17 +1,27 @@
 # Horizon
 
-Current Version: {{version}}
+Horizon is an [SBT](http://www.scala-sbt.org/) plugin that adds new tools
+to automate common (boring) tasks in your Scala codebase, like:
 
-[View the ScalaDocs](https://paypal.github.com/horizon/api/{{version}}/index.html#com.paypal.horizon.package)
+* Releasing to Maven Central
+* Generating Documentation
+* Publishing Documentation
+* Changing Version Numbers (e.g. in your README)
 
-[View the Changelog](https://paypal.github.com/horizon/blob/develop/CHANGELOG.md)
+# Details
 
-Horizon is an sbt plugin designed to house common build settings for Scala applications. It's carefully designed to:
+The plugin is carefully designed to fit into the SBT ecosystem. If you
+add it to your project, you'll get a well defined set of keys that each
+do one thing. See the below "Plugin Details" section for details on each key.
 
-* Work well with Scala and the Typesafe libraries.
-* Be well defined in its functionality.
+Auxiliary documentation:
+
+* [ScalaDocs](https://paypal.github.com/horizon/api/0.1.3/index.html#com.paypal.horizon.package)
+* [Changelog](https://paypal.github.com/horizon/blob/develop/CHANGELOG.md)
 
 # Usage
+
+Current Version: {{version}}
 
 In **project/plugins.sbt**, add:
 
