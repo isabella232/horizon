@@ -17,7 +17,7 @@ do one thing. See the below "Plugin Details" section for details on each key.
 Auxiliary documentation:
 
 * [ScalaDocs](https://paypal.github.com/horizon/api/0.1.3/index.html#com.paypal.horizon.package)
-* [Changelog](https://paypal.github.com/horizon/blob/develop/CHANGELOG.md)
+* [Changelog](https://github.com/paypal/horizon/blob/develop/CHANGELOG.md)
 
 # Usage
 
