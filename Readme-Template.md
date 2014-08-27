@@ -10,8 +10,8 @@ to automate common (boring) tasks in your Scala codebase, like:
 
 # Details
 
-Horizon is carefully designed to fit into the SBT ecosystem. If you
-add Horizon to your project, you'll get a well defined set of keys that each
+The plugin is carefully designed to fit into the SBT ecosystem. If you
+add it to your project, you'll get a well defined set of keys that each
 do one thing. See the below "Plugin Details" section for details on each key.
 
 Auxiliary documentation:
