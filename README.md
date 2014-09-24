@@ -1,5 +1,7 @@
 # Horizon
 
+[![Build Status](https://travis-ci.org/paypal/horizon.png?branch=develop)](https://travis-ci.org/paypal/horizon)
+
 Horizon is an [SBT](http://www.scala-sbt.org/) plugin that adds new tools
 to automate common (boring) tasks in your Scala codebase, like:
 
