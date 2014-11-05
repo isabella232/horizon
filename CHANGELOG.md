@@ -1,3 +1,7 @@
+# 0.1.4 11/05/2014 releaes by taylorleese
+* Bumped sbt to 0.13.6
+* Fixed dependency conflict with sbt release plugin
+
 # 0.1.3 8/25/2014 released by arschles
 * Fixing a mistake in pomExtra in the Build.scala file.
 
