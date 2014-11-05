@@ -1,4 +1,4 @@
-# 0.1.4 11/05/2014 releaes by taylorleese
+# 0.1.4 11/05/2014 released by taylorleese
 * Bumped sbt to 0.13.6
 * Fixed dependency conflict with sbt release plugin
 
