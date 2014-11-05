@@ -115,7 +115,7 @@ object BuildSettings {
       "org.scala-lang" % "scala-library"  % vsn,
       "org.scala-lang" % "scala-compiler" % vsn
     )},
-    addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.2"),
+    addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.3"),
     addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.2" exclude("com.typesafe.sbt", "sbt-git")),
     addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.7.0"),
     addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.6.4" exclude ("org.eclipse.jgit", "org.eclipse.jgit")),
@@ -134,27 +134,36 @@ object BuildSettings {
     },
     publishMavenStyle := true,
     publishArtifact in Test := false,
-    pomExtra := (
-        <url>https://github.com/paypal/horizon</url>
-        <licenses>
-            <license>
-                <name>Apache 2</name>
-                <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-                <distribution>repo</distribution>
-            </license>
-        </licenses>
-        <scm>
-            <url>git@github.com:paypal/horizon.git</url>
-            <connection>scm:git:git@github.com:paypal/horizon.git</connection>
-        </scm>
-        <developers>
-            <developer>
-                <id>arschles</id>
-                <name>Aaron Schlesinger</name>
-                <url>https://github.com/arschles</url>
-            </developer>
-        </developers>
-    )
+    pomExtra :=
+      <url>https://github.com/paypal/horizon</url>
+      <licenses>
+        <license>
+          <name>Apache 2</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+          <distribution>repo</distribution>
+        </license>
+      </licenses>
+      <scm>
+        <url>git@github.com:paypal/horizon.git</url>
+        <connection>scm:git:git@github.com:paypal/horizon.git</connection>
+      </scm>
+      <developers>
+        <developer>
+          <id>msv</id>
+          <name>Matt Vaznaian</name>
+          <url>https://github.com/msv</url>
+        </developer>
+        <developer>
+          <id>arschles</id>
+          <name>Aaron Schlesinger</name>
+          <url>https://github.com/arschles</url>
+        </developer>
+        <developer>
+          <id>taylorleese</id>
+          <name>Taylor Leese</name>
+          <url>https://github.com/taylorleese</url>
+        </developer>
+      </developers>
   )
 }
 
