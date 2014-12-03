@@ -124,6 +124,8 @@ object BuildSettings {
       "org.eclipse.jgit" % "org.eclipse.jgit" % "3.3.0.201403021825-r",
       "org.specs2" %% "specs2" % "2.3.12" % "test"
     ),
+    apiURL := Some(url("http://paypal.github.io/horizon/api/")),
+    autoAPIMappings := true,
     publishTo := {
       val nexus = s"$nexusHost/"
         if (isSnapshot.value) {
@@ -134,6 +136,7 @@ object BuildSettings {
     },
     publishMavenStyle := true,
     publishArtifact in Test := false,
+    pomIncludeRepository := { _ => false },
     pomExtra :=
       <url>https://github.com/paypal/horizon</url>
       <licenses>
