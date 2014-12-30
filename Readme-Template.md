@@ -1,25 +1,39 @@
 # Horizon
 
-Current Version: {{version}}
+![Horizon logo](doc/horizon.png)
 
-[View the ScalaDocs](https://paypal.github.com/horizon/api/{{version}}/index.html#com.paypal.horizon.package)
+[![Build Status](https://travis-ci.org/paypal/horizon.png?branch=develop)](https://travis-ci.org/paypal/horizon)
 
-[View the Changelog](https://paypal.github.com/horizon/blob/develop/CHANGELOG.md)
+Horizon is an [SBT](http://www.scala-sbt.org/) plugin that adds new tools
+to automate common (boring) tasks in your Scala codebase, like:
 
-Horizon is an sbt plugin designed to house common build settings for Scala applications. It's carefully designed to:
+* Releasing to Maven Central
+* Generating Documentation
+* Publishing Documentation
+* Changing Version Numbers (e.g. in your README)
 
-* Work well with Scala and the Typesafe libraries.
-* Be well defined in its functionality.
+# Details
+
+The plugin is carefully designed to fit into the SBT ecosystem. If you
+add it to your project, you'll get a well defined set of keys that each
+do one thing. See the below "Plugin Details" section for details on each key.
+
+Auxiliary documentation:
+
+* [ScalaDocs](https://paypal.github.com/horizon/api/{{version}}/index.html#com.paypal.horizon.package)
+* [Changelog](https://github.com/paypal/horizon/blob/develop/CHANGELOG.md)
 
 # Usage
 
+Current Version: {{version}}
+
 In **project/plugins.sbt**, add:
 
-`addSbtPlugin("com.paypal.stingray" % "sbt-build-utilities" % "{{version}}")`
+`addSbtPlugin("com.paypal" % "horizon" % "{{version}}")`
 
 After re-compiling to include the dependency, in **project/Build.scala**, add:
 
-`import com.paypal.stingray.sbt.BuildUtilities._`
+`import com.paypal.horizon.BuildUtilities._`
 
 This will give you access to the main build settings offered by this plugin.
 
@@ -164,7 +178,9 @@ The following steps are executed in order, and if any of the following steps fai
 
 Caveats: The `defaultReleaseProcess` depends on adding `utilitySettings` to build settings in order to complete the `generateAndPushDocs` release step. The readme release step depends on `Readme-Template.md` file, from which the README.md file is produced. Override setting if file is named differently.
 
+### signedReleaseProcess
 
+Defines the same steps as `defaultReleaseProcess` except it publishes signed artifacts.
 
 ### findManagedDependencies
 
@@ -250,6 +266,23 @@ This can be useful to include so others changes are not overwritten if they edit
 * `generateAndPushDocs` - This uses features from the `sbt-site`, `sbt-unidoc`, and `sbt-ghpages` plugins to generate Scaladocs and push them to the public gh-pages branch of your project's repository. This release step executes the `make-site` sbt task, followed by the `push-site` sbt task. By default, the docs will be pushed to `/api/$version`. Override the `siteMappings` setting to change.
 
 NOTE: Make sure the gh-pages branch already exists before using this release step. See the [github documentation](https://help.github.com/articles/creating-project-pages-manually#create-a-gh-pages-branch) for more information.
+
+# Releasing Horizon
+1. Create ```~/.sbt/0.13/sonatype.sbt```
+```scala
+credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", <username>, <password>)
+```
+2. Create a release branch (e.g. release/<version>) 
+3. Edit changelog
+4. Edit version.sbt (if needed)
+5. Commit changes and push to release branch
+6. Run ```sbt “release with-defaults”``` 
+7. Go to http://oss.sonatype.org and login
+8. Go to “Staging Repositories” (on left side)
+9. Find your repo (at the bottom) 
+10. Click close
+11. Click release
+12. Open pull requests against both master and develop
 
 # Contributing
 
