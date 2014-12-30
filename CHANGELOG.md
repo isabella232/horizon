@@ -1,3 +1,7 @@
+# 0.2.0 12/29/2014 released by taylorleese
+* Bumpted sbt to 0.13.7
+* Added support for publishing signed artifacts
+
 # 0.1.4 11/05/2014 released by taylorleese
 * Bumped sbt to 0.13.6
 * Fixed dependency conflict with sbt release plugin
