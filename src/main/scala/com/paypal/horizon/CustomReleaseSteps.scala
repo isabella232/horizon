@@ -25,6 +25,7 @@ import scala.io.Source
 import sbtrelease.ReleasePlugin.ReleaseKeys._
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import com.typesafe.sbt.pgp.PgpKeys._
 
 /**
  * Common methods used amongst custom release step implementations.
@@ -41,6 +42,7 @@ trait CommonContext {
     val (newState, _) = extracted.runTask(task in ref, st)
     newState
   }
+
 }
 
 /**
@@ -186,7 +188,6 @@ object ReadmeReleaseSteps extends CommonContext {
    * Release step which generates the readme from the template followed by committing the changes.
    */
   lazy val generateReadme: ReleaseStep = { st: State =>
-
     try {
       val version = getReleasedVersion(st)
       val st2 = executeTask(genReadme, "Generating readme")(st)
@@ -233,6 +234,7 @@ object ReadmeReleaseSteps extends CommonContext {
       case e: Throwable => throw new ReadmeCommitException(e)
     }
   }
+
 }
 
 /**
@@ -250,4 +252,21 @@ object ScaladocReleaseSteps extends CommonContext {
     val st2 = executeTask(makeSite, "Making doc site")(st)
     executeTask(pushSite, "Publishing doc site")(st2)
   }
+
+}
+
+/**
+ * Includes a release step `publishSignedAction` for [[sbtrelease]] to publish signed artifacts.
+ */
+object PublishSignedReleaseSteps extends CommonContext {
+
+  /**
+   * Publishes signed artifacts using the PGP plugin.
+   */
+  lazy val publishSignedAction: ReleaseStep = { st: State =>
+    val extracted = Project.extract(st)
+    val ref = extracted.get(thisProjectRef)
+    extracted.runAggregated(publishSigned in Global in ref, st)
+  }
+
 }
