@@ -267,6 +267,23 @@ This can be useful to include so others changes are not overwritten if they edit
 
 NOTE: Make sure the gh-pages branch already exists before using this release step. See the [github documentation](https://help.github.com/articles/creating-project-pages-manually#create-a-gh-pages-branch) for more information.
 
+# Releasing Horizon
+1. Create ```~/.sbt/0.13/sonatype.sbt```
+```scala
+credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", <username>, <password>)
+```
+2. Create a release branch (e.g. release/<version>) 
+3. Edit changelog
+4. Edit version.sbt (if needed)
+5. Commit changes and push to release branch
+6. Run ```sbt “release with-defaults”``` 
+7. Go to http://oss.sonatype.org and loging
+8. Go to “Staging Repositories” (on left side)
+9. Find your repo (at the bottom) 
+10. Click close
+11. Click release
+12. Open pull requests against both master and develop
+
 # Contributing
 
 We accept and look at all contributions to this project. If you find a bug or
