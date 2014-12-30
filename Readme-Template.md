@@ -1,5 +1,9 @@
 # Horizon
 
+![Horizon logo](doc/horizon.png)
+
+[![Build Status](https://travis-ci.org/paypal/horizon.png?branch=develop)](https://travis-ci.org/paypal/horizon)
+
 Horizon is an [SBT](http://www.scala-sbt.org/) plugin that adds new tools
 to automate common (boring) tasks in your Scala codebase, like:
 
@@ -16,7 +20,7 @@ do one thing. See the below "Plugin Details" section for details on each key.
 
 Auxiliary documentation:
 
-* [ScalaDocs](https://paypal.github.com/horizon/api/0.1.3/index.html#com.paypal.horizon.package)
+* [ScalaDocs](https://paypal.github.com/horizon/api/{{version}}/index.html#com.paypal.horizon.package)
 * [Changelog](https://github.com/paypal/horizon/blob/develop/CHANGELOG.md)
 
 # Usage
@@ -174,7 +178,9 @@ The following steps are executed in order, and if any of the following steps fai
 
 Caveats: The `defaultReleaseProcess` depends on adding `utilitySettings` to build settings in order to complete the `generateAndPushDocs` release step. The readme release step depends on `Readme-Template.md` file, from which the README.md file is produced. Override setting if file is named differently.
 
+### signedReleaseProcess
 
+Defines the same steps as `defaultReleaseProcess` except it publishes signed artifacts.
 
 ### findManagedDependencies
 

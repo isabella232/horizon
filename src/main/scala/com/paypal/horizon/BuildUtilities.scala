@@ -146,6 +146,26 @@ object BuildUtilities extends Plugin with GitInfo {
   )
 
   /**
+   * The same process as [[defaultReleaseProcess]] except it publishes signed artifacts.
+   */
+  lazy val signedReleaseProcess = Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    ChangelogReleaseSteps.checkForChangelog,
+    runTest,
+    setReleaseVersion,
+    commitReleaseVersion,
+    ChangelogReleaseSteps.updateChangelog,
+    ReadmeReleaseSteps.generateReadme,
+    tagRelease,
+    publishArtifacts.copy(action = PublishSignedReleaseSteps.publishSignedAction),
+    ScaladocReleaseSteps.generateAndPushDocs,
+    setNextVersion,
+    commitNextVersion,
+    pushChanges
+  )
+
+  /**
    * Finds the managed dependency for use with sbt api mappings.
    *
    * @param organization the module organization

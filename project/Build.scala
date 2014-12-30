@@ -19,6 +19,7 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import sbt._
 import Keys._
 import sbtunidoc.Plugin._
+import com.typesafe.sbt.pgp.PgpKeys._
 import com.typesafe.sbt.SbtSite._
 import com.typesafe.sbt.SbtGit._
 import GitKeys._
@@ -93,7 +94,7 @@ object BuildSettings {
         commitReleaseVersion,
         generateReadme,
         tagRelease,
-        publishArtifacts,
+        publishArtifacts.copy(action = publishSignedAction),
         generateAndPushDocs,
         setNextVersion,
         commitNextVersion,
@@ -110,7 +111,6 @@ object BuildSettings {
     fork := true,
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     scalacOptions in Test ++= Seq("-Yrangepos"),
-    resolvers += "releases" at s"$nexusHost/service/local/staging/deploy/maven2/",
     dependencyOverrides <++= scalaVersion { vsn => Set(
       "org.scala-lang" % "scala-library"  % vsn,
       "org.scala-lang" % "scala-compiler" % vsn
@@ -119,6 +119,7 @@ object BuildSettings {
     addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.2" exclude("com.typesafe.sbt", "sbt-git")),
     addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.7.0"),
     addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.6.4" exclude ("org.eclipse.jgit", "org.eclipse.jgit")),
+    addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0"),
     addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.0"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit" % "org.eclipse.jgit" % "3.3.0.201403021825-r",
@@ -209,6 +210,12 @@ object AdditionalReleaseSteps {
     } catch {
       case e: Throwable => throw new ChangelogEntryMissingException(e)
     }
+  }
+
+  lazy val publishSignedAction: ReleaseStep = { st: State =>
+    val extracted = Project.extract(st)
+    val ref = extracted.get(thisProjectRef)
+    extracted.runAggregated(publishSigned in Global in ref, st)
   }
 
   lazy val generateAndPushDocs: ReleaseStep = { st: State =>
