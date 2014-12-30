@@ -277,7 +277,7 @@ credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.or
 4. Edit version.sbt (if needed)
 5. Commit changes and push to release branch
 6. Run ```sbt “release with-defaults”``` 
-7. Go to http://oss.sonatype.org and loging
+7. Go to http://oss.sonatype.org and login
 8. Go to “Staging Repositories” (on left side)
 9. Find your repo (at the bottom) 
 10. Click close
