@@ -292,10 +292,10 @@ object BuildUtilities extends Plugin with GitInfo {
       ghpagesDir := extractDirStructure(originUrl),
       repository <<= ghpagesDir.apply (dir => file(System.getProperty("user.home")) / ".sbt" / "ghpages" / dir),
       siteMappings <++= (mappings in (ScalaUnidoc, packageDoc), version).map { (mapping, ver) =>
-        for((file, path) <- mapping) yield (file, (s"api/$ver/$path"))
+        for((file, path) <- mapping) yield (file, s"api/$ver/$path")
       },
       synchLocal <<= (privateMappings, updatedRepository, gitRunner, streams).map { (mappings, repo, git, s) =>
-        val betterMappings = mappings.map { case (file, target) => (file, repo / target) }
+        val betterMappings = mappings.map { case (file, tgt) => (file, repo / tgt) }
         IO.copy(betterMappings)
         repo
       },

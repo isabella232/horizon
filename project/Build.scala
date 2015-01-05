@@ -26,6 +26,7 @@ import GitKeys._
 import com.typesafe.sbt.SbtGhPages._
 import GhPagesKeys._
 import sbtrelease._
+import sbtrelease.Utilities._
 import scala.io.Source
 import net.virtualvoid.sbt.graph.Plugin
 import org.scalastyle.sbt.ScalastylePlugin
@@ -115,7 +116,7 @@ object BuildSettings {
       "org.scala-lang" % "scala-library"  % vsn,
       "org.scala-lang" % "scala-compiler" % vsn
     )},
-    addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.3"),
+    addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.5"),
     addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.2" exclude("com.typesafe.sbt", "sbt-git")),
     addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.7.0"),
     addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.6.4" exclude ("org.eclipse.jgit", "org.eclipse.jgit")),
@@ -212,8 +213,8 @@ object AdditionalReleaseSteps {
     }
   }
 
-  lazy val publishSignedAction: ReleaseStep = { st: State =>
-    val extracted = Project.extract(st)
+  lazy val publishSignedAction: State => State = { st: State =>
+    val extracted = st.extract
     val ref = extracted.get(thisProjectRef)
     extracted.runAggregated(publishSigned in Global in ref, st)
   }
@@ -225,7 +226,7 @@ object AdditionalReleaseSteps {
 
   private def executeTask(task: TaskKey[_], info: String) = (st: State) => {
     st.log.info(info)
-    val extracted = Project.extract(st)
+    val extracted = st.extract
     val ref: ProjectRef = extracted.get(thisProjectRef)
     val (newState, _) = extracted.runTask(task in ref, st)
     newState
@@ -242,7 +243,7 @@ object AdditionalReleaseSteps {
   }
 
   private def generateReadmeFromMappings(st: State, newVersion: String): Unit = {
-    val extracted = Project.extract(st)
+    val extracted = st.extract
     val templateMappings = extracted.get(readmeTemplateMappings)
     val template = Source.fromFile(readmeTemplate).mkString
     val out = new PrintWriter(readme, "UTF-8")
@@ -259,7 +260,7 @@ object AdditionalReleaseSteps {
   }
 
   private def commitReadme(st: State, newVersion: String): Unit = {
-    val vcs = Project.extract(st).get(versionControlSystem).getOrElse(sys.error("Unable to get version control system."))
+    val vcs = st.extract.get(versionControlSystem).getOrElse(sys.error("Unable to get version control system."))
     vcs.add(readme) !! st.log
     vcs.commit(s"README.md updated to $newVersion") ! st.log
   }
