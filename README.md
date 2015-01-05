@@ -20,16 +20,16 @@ do one thing. See the below "Plugin Details" section for details on each key.
 
 Auxiliary documentation:
 
-* [ScalaDocs](https://paypal.github.com/horizon/api/0.2.0/index.html#com.paypal.horizon.package)
+* [ScalaDocs](https://paypal.github.com/horizon/api/0.3.0/index.html#com.paypal.horizon.package)
 * [Changelog](https://github.com/paypal/horizon/blob/develop/CHANGELOG.md)
 
 # Usage
 
-Current Version: 0.2.0
+Current Version: 0.3.0
 
 In **project/plugins.sbt**, add:
 
-`addSbtPlugin("com.paypal" % "horizon" % "0.2.0")`
+`addSbtPlugin("com.paypal" % "horizon" % "0.3.0")`
 
 After re-compiling to include the dependency, in **project/Build.scala**, add:
 
@@ -106,7 +106,7 @@ changelog := "MyChangelog.txt"
 
 This will overwrite the default.
 
-[View the list of build utility keys](https://paypal.github.com/horizon/api/0.2.0/index.html#com.paypal.horizon.BuildUtilitiesKeys$)
+[View the list of build utility keys](https://paypal.github.com/horizon/api/0.3.0/index.html#com.paypal.horizon.BuildUtilitiesKeys$)
 
 ## BuildUtilities
 
@@ -222,7 +222,7 @@ Defines custom release steps which are included in the `defaultReleaseProcess` v
 
 ### ChangelogReleaseSteps
 
-[View the Scaladocs](https://paypal.github.com/horizon/api/0.2.0/#com.paypal.horizon.ChangelogReleaseSteps$)
+[View the Scaladocs](https://paypal.github.com/horizon/api/0.3.0/#com.paypal.horizon.ChangelogReleaseSteps$)
 
 * `checkForChangelog` - In order for the changelog to get updated, the system properties `changelog.msg` and `changelog.author` must be defined. These are typically defined by CI environment variables, etc. This release step checks to make sure these system properties are defined.
 
@@ -235,7 +235,7 @@ Defines custom release steps which are included in the `defaultReleaseProcess` v
 
 ### ReadmeReleaseSteps
 
-[View the Scaladocs](https://paypal.github.com/horizon/api/0.2.0/#com.paypal.horizon.ReadmeReleaseSteps$)
+[View the Scaladocs](https://paypal.github.com/horizon/api/0.3.0/#com.paypal.horizon.ReadmeReleaseSteps$)
 
 * `generateReadme` - Generates the readme based on the readme template, and commits the changes to the VCS. By default, the readme file is set to `README.md` and the template file is set to `Readme-Template.md`. The template file can include placeholder words wrapped in `{{...}}` which will be filled in during generation. These placeholders are defined by the `readmeTemplateMappings` setting. It is currently defined as:
 
@@ -245,7 +245,7 @@ readmeTemplateMappings <<= (version in ThisBuild) { ver =>
 }
 ```
 
-This setting reads as "Any time there is 0.2.0 in the template, replace it with the current build version". You can define placeholders as needed in your project's build settings using the `<<=` operator to add additional settings to the exisiting set or the `:=` operator to define your own set.
+This setting reads as "Any time there is 0.3.0 in the template, replace it with the current build version". You can define placeholders as needed in your project's build settings using the `<<=` operator to add additional settings to the exisiting set or the `:=` operator to define your own set.
 
 You can generate the readme file at any time without committing by manually executing the `gen-readme` sbt task. For example,
 
@@ -261,7 +261,7 @@ This can be useful to include so others changes are not overwritten if they edit
 
 ### ScaladocReleaseSteps
 
-[View the Scaladocs](https://paypal.github.com/horizon/api/0.2.0/#com.paypal.horizon.ScaladocReleaseSteps$)
+[View the Scaladocs](https://paypal.github.com/horizon/api/0.3.0/#com.paypal.horizon.ScaladocReleaseSteps$)
 
 * `generateAndPushDocs` - This uses features from the `sbt-site`, `sbt-unidoc`, and `sbt-ghpages` plugins to generate Scaladocs and push them to the public gh-pages branch of your project's repository. This release step executes the `make-site` sbt task, followed by the `push-site` sbt task. By default, the docs will be pushed to `/api/$version`. Override the `siteMappings` setting to change.
 
