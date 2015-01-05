@@ -1,0 +1,200 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>horizon - com.paypal.horizon</title>
+          <meta name="description" content="horizon - com.paypal.horizon" />
+          <meta name="keywords" content="horizon com.paypal.horizon" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../index.html';
+            var hash = 'com.paypal.horizon.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../lib/package_big.png" />
+        <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.paypal">paypal</a></p>
+        <h1>horizon</h1>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">horizon</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="com.paypal.horizon.CommonContext" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="CommonContextextendsAnyRef"></a>
+      <a id="CommonContext:CommonContext"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="CommonContext.html"><span class="name">CommonContext</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Common methods used amongst custom release step implementations.</p>
+    </li><li name="com.paypal.horizon.GitInfo" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="GitInfoextendsAnyRef"></a>
+      <a id="GitInfo:GitInfo"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="GitInfo.html"><span class="name">GitInfo</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Provides access to Git repository information for the current build.</p>
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="com.paypal.horizon.BuildUtilities" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="BuildUtilities"></a>
+      <a id="BuildUtilities:BuildUtilities"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="BuildUtilities$.html"><span class="name">BuildUtilities</span></a><span class="result"> extends <span class="extype" name="sbt.Plugin">Plugin</span> with <a href="GitInfo.html" class="extype" name="com.paypal.horizon.GitInfo">GitInfo</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Primary plugin object used to access all major build utilities.</p>
+    </li><li name="com.paypal.horizon.BuildUtilitiesKeys" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="BuildUtilitiesKeys"></a>
+      <a id="BuildUtilitiesKeys:BuildUtilitiesKeys"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="BuildUtilitiesKeys$.html"><span class="name">BuildUtilitiesKeys</span></a>
+      </span>
+      </h4>
+      <p class="comment cmt">Settings and tasks for various build utilities.</p>
+    </li><li name="com.paypal.horizon.ChangelogReleaseSteps" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ChangelogReleaseSteps"></a>
+      <a id="ChangelogReleaseSteps:ChangelogReleaseSteps"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ChangelogReleaseSteps$.html"><span class="name">ChangelogReleaseSteps</span></a><span class="result"> extends <a href="CommonContext.html" class="extype" name="com.paypal.horizon.CommonContext">CommonContext</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Adds <a href="https://github.com/sbt/sbt-release" target="_blank">sbtrelease</a> steps for checking and updating Changelog.</p>
+    </li><li name="com.paypal.horizon.PublishSignedReleaseSteps" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PublishSignedReleaseSteps"></a>
+      <a id="PublishSignedReleaseSteps:PublishSignedReleaseSteps"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="PublishSignedReleaseSteps$.html"><span class="name">PublishSignedReleaseSteps</span></a><span class="result"> extends <a href="CommonContext.html" class="extype" name="com.paypal.horizon.CommonContext">CommonContext</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Includes an action <code>publishSignedAction</code> for <span class="extype" name="sbtrelease">sbtrelease</span> to publish signed artifacts.</p>
+    </li><li name="com.paypal.horizon.ReadmeReleaseSteps" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReadmeReleaseSteps"></a>
+      <a id="ReadmeReleaseSteps:ReadmeReleaseSteps"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ReadmeReleaseSteps$.html"><span class="name">ReadmeReleaseSteps</span></a><span class="result"> extends <a href="CommonContext.html" class="extype" name="com.paypal.horizon.CommonContext">CommonContext</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Includes a release step <code>generateReadme</code> which creates a <code>README.md</code> from a template and commits the file.</p>
+    </li><li name="com.paypal.horizon.ScaladocReleaseSteps" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ScaladocReleaseSteps"></a>
+      <a id="ScaladocReleaseSteps:ScaladocReleaseSteps"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ScaladocReleaseSteps$.html"><span class="name">ScaladocReleaseSteps</span></a><span class="result"> extends <a href="CommonContext.html" class="extype" name="com.paypal.horizon.CommonContext">CommonContext</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Includes a release step <code>generateAndPushDocs</code> for <span class="extype" name="sbtrelease">sbtrelease</span> to generate ScalaDocs
+using sbt-unidoc and sbt-site, followed by pushing them to the gh-pages branch of the current project's repository.</p>
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../../lib/template.js"></script>
+    </body>
+      </html>
