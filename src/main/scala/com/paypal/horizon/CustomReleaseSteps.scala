@@ -16,6 +16,7 @@
 package com.paypal.horizon
 
 import sbtrelease.ReleaseStep
+import sbtrelease.Utilities._
 import sbt._
 import sbt.Keys._
 import com.typesafe.sbt.SbtGhPages.GhPagesKeys._
@@ -37,7 +38,7 @@ trait CommonContext {
 
   def executeTask(task: TaskKey[_], info: String): State => State = (st: State) => {
     st.log.info(info)
-    val extracted = Project.extract(st)
+    val extracted = st.extract
     val ref: ProjectRef = extracted.get(thisProjectRef)
     val (newState, _) = extracted.runTask(task in ref, st)
     newState
@@ -113,7 +114,7 @@ object ChangelogReleaseSteps extends CommonContext {
 
   private def updateChangelog(info: ChangelogInfo, st: State): Unit = {
     try {
-      val changelogFile = Project.extract(st).get(changelog)
+      val changelogFile = st.extract.get(changelog)
       val oldChangelog = Source.fromFile(changelogFile).mkString
       val theVersion = getReleasedVersion(st)
       val dateFormat = new SimpleDateFormat("MM/dd/yy")
@@ -135,8 +136,8 @@ object ChangelogReleaseSteps extends CommonContext {
 
   private def commitChangelog(st: State): Unit = {
     try {
-      val changelogFile = Project.extract(st).get(changelog)
-      val vcs = Project.extract(st).get(versionControlSystem).getOrElse(
+      val changelogFile = st.extract.get(changelog)
+      val vcs = st.extract.get(versionControlSystem).getOrElse(
         sys.error("Aborting release. Working directory is not a repository of a recognized VCS."))
       vcs.add(changelogFile) !! st.log
       vcs.commit("Changelog updated for " + getReleasedVersion(st)) ! st.log
@@ -225,7 +226,7 @@ object ReadmeReleaseSteps extends CommonContext {
 
   private def commitReadme(st: State, newVersion: String): Unit = {
     try {
-      val extracted = Project.extract(st)
+      val extracted = st.extract
       val vcs = extracted.get(versionControlSystem).getOrElse(sys.error("Unable to get version control system."))
       val readmeFile = extracted.get(readme)
       vcs.add(readmeFile) !! st.log
@@ -256,15 +257,15 @@ object ScaladocReleaseSteps extends CommonContext {
 }
 
 /**
- * Includes a release step `publishSignedAction` for [[sbtrelease]] to publish signed artifacts.
+ * Includes an action `publishSignedAction` for [[sbtrelease]] to publish signed artifacts.
  */
 object PublishSignedReleaseSteps extends CommonContext {
 
   /**
    * Publishes signed artifacts using the PGP plugin.
    */
-  lazy val publishSignedAction: ReleaseStep = { st: State =>
-    val extracted = Project.extract(st)
+  lazy val publishSignedAction: State => State = { st: State =>
+    val extracted = st.extract
     val ref = extracted.get(thisProjectRef)
     extracted.runAggregated(publishSigned in Global in ref, st)
   }

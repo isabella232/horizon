@@ -20,16 +20,16 @@ do one thing. See the below "Plugin Details" section for details on each key.
 
 Auxiliary documentation:
 
-* [ScalaDocs](https://paypal.github.com/horizon/api/0.2.0/index.html#com.paypal.horizon.package)
+* [ScalaDocs](https://paypal.github.com/horizon/api/0.3.0/index.html#com.paypal.horizon.package)
 * [Changelog](https://github.com/paypal/horizon/blob/develop/CHANGELOG.md)
 
 # Usage
 
-Current Version: 0.2.0
+Current Version: 0.3.0
 
 In **project/plugins.sbt**, add:
 
-`addSbtPlugin("com.paypal" % "horizon" % "0.2.0")`
+`addSbtPlugin("com.paypal" % "horizon" % "0.3.0")`
 
 After re-compiling to include the dependency, in **project/Build.scala**, add:
 
@@ -106,7 +106,7 @@ changelog := "MyChangelog.txt"
 
 This will overwrite the default.
 
-[View the list of build utility keys](https://paypal.github.com/horizon/api/0.2.0/index.html#com.paypal.horizon.BuildUtilitiesKeys$)
+[View the list of build utility keys](https://paypal.github.com/horizon/api/0.3.0/index.html#com.paypal.horizon.BuildUtilitiesKeys$)
 
 ## BuildUtilities
 
@@ -222,7 +222,7 @@ Defines custom release steps which are included in the `defaultReleaseProcess` v
 
 ### ChangelogReleaseSteps
 
-[View the Scaladocs](https://paypal.github.com/horizon/api/0.2.0/#com.paypal.horizon.ChangelogReleaseSteps$)
+[View the Scaladocs](https://paypal.github.com/horizon/api/0.3.0/#com.paypal.horizon.ChangelogReleaseSteps$)
 
 * `checkForChangelog` - In order for the changelog to get updated, the system properties `changelog.msg` and `changelog.author` must be defined. These are typically defined by CI environment variables, etc. This release step checks to make sure these system properties are defined.
 
@@ -235,7 +235,7 @@ Defines custom release steps which are included in the `defaultReleaseProcess` v
 
 ### ReadmeReleaseSteps
 
-[View the Scaladocs](https://paypal.github.com/horizon/api/0.2.0/#com.paypal.horizon.ReadmeReleaseSteps$)
+[View the Scaladocs](https://paypal.github.com/horizon/api/0.3.0/#com.paypal.horizon.ReadmeReleaseSteps$)
 
 * `generateReadme` - Generates the readme based on the readme template, and commits the changes to the VCS. By default, the readme file is set to `README.md` and the template file is set to `Readme-Template.md`. The template file can include placeholder words wrapped in `{{...}}` which will be filled in during generation. These placeholders are defined by the `readmeTemplateMappings` setting. It is currently defined as:
 
@@ -245,7 +245,7 @@ readmeTemplateMappings <<= (version in ThisBuild) { ver =>
 }
 ```
 
-This setting reads as "Any time there is 0.2.0 in the template, replace it with the current build version". You can define placeholders as needed in your project's build settings using the `<<=` operator to add additional settings to the exisiting set or the `:=` operator to define your own set.
+This setting reads as "Any time there is 0.3.0 in the template, replace it with the current build version". You can define placeholders as needed in your project's build settings using the `<<=` operator to add additional settings to the exisiting set or the `:=` operator to define your own set.
 
 You can generate the readme file at any time without committing by manually executing the `gen-readme` sbt task. For example,
 
@@ -261,28 +261,55 @@ This can be useful to include so others changes are not overwritten if they edit
 
 ### ScaladocReleaseSteps
 
-[View the Scaladocs](https://paypal.github.com/horizon/api/0.2.0/#com.paypal.horizon.ScaladocReleaseSteps$)
+[View the Scaladocs](https://paypal.github.com/horizon/api/0.3.0/#com.paypal.horizon.ScaladocReleaseSteps$)
 
 * `generateAndPushDocs` - This uses features from the `sbt-site`, `sbt-unidoc`, and `sbt-ghpages` plugins to generate Scaladocs and push them to the public gh-pages branch of your project's repository. This release step executes the `make-site` sbt task, followed by the `push-site` sbt task. By default, the docs will be pushed to `/api/$version`. Override the `siteMappings` setting to change.
 
 NOTE: Make sure the gh-pages branch already exists before using this release step. See the [github documentation](https://help.github.com/articles/creating-project-pages-manually#create-a-gh-pages-branch) for more information.
 
-# Releasing Horizon
-1. Create ```~/.sbt/0.13/sonatype.sbt```
-```scala
-credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", <username>, <password>)
-```
-2. Create a release branch (e.g. release/<version>) 
-3. Edit changelog
-4. Edit version.sbt (if needed)
-5. Commit changes and push to release branch
-6. Run ```sbt “release with-defaults”``` 
-7. Go to http://oss.sonatype.org and login
-8. Go to “Staging Repositories” (on left side)
-9. Find your repo (at the bottom) 
-10. Click close
-11. Click release
-12. Open pull requests against both master and develop
+## Publishing to Sonatype OSS
+
+This section is for Horizon core contributors only.
+
+The following should be done once prior to attempting to release a new version of Horizon.
+
+1. Create an account at http://issues.sonatype.org
+2. Request publish access at https://issues.sonatype.org/browse/OSSRH-11183
+3. Create an account at http://oss.sonatype.org
+4. Create a user token:
+ - Login into Sonatype OSS with the credentials from the previous step
+ - Open up your profile
+ - Select user token from the profile settings dropdown
+ - Click access user token
+5. Create ```~/.sbt/0.13/sonatype.sbt``` using the user token from the previous step:
+
+  ```scala
+  credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", <username>, <password>)
+  ```
+
+6. If you haven't done so previously, open sbt in Horizon to create and publish a PGP key pair using these commands:
+  - ```set pgpReadOnly := false```
+  - ```pgp-cmd gen-key```. Take note of the email address you set. You'll use it in the next command.
+  - ```pgp-cmd send-key $EMAILADDR hkp://keyserver.ubuntu.com```
+  - See http://www.scala-sbt.org/sbt-pgp/usage.html for more information
+7. Close sbt in Horizon
+
+## Releasing A New Version of Horizon
+
+This section is for Horizon core contributors only.
+
+All releases must be done from a release branch that merges into master.
+
+1. Complete the steps in the "Publishing to Sonatype OSS" section above
+2. Create a `release/$RELEASENAME` branch
+3. [Open a pull request](https://github.com/paypal/horizon/compare) merging your branch from (2) into `master`
+4. Perform the release using ```sbt "release with-defaults"```
+5. Go to http://oss.sonatype.org and login
+6. Go to “Staging Repositories” (on left side)
+7. Find your repo (at the bottom) 
+8. Click close
+9. Click release
+10. Merge your PR from (3), then merge `release/$RELEASENAME` into `develop`
 
 # Contributing
 

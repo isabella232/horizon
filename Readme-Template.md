@@ -267,22 +267,49 @@ This can be useful to include so others changes are not overwritten if they edit
 
 NOTE: Make sure the gh-pages branch already exists before using this release step. See the [github documentation](https://help.github.com/articles/creating-project-pages-manually#create-a-gh-pages-branch) for more information.
 
-# Releasing Horizon
-1. Create ```~/.sbt/0.13/sonatype.sbt```
-```scala
-credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", <username>, <password>)
-```
-2. Create a release branch (e.g. release/<version>) 
-3. Edit changelog
-4. Edit version.sbt (if needed)
-5. Commit changes and push to release branch
-6. Run ```sbt “release with-defaults”``` 
-7. Go to http://oss.sonatype.org and login
-8. Go to “Staging Repositories” (on left side)
-9. Find your repo (at the bottom) 
-10. Click close
-11. Click release
-12. Open pull requests against both master and develop
+## Publishing to Sonatype OSS
+
+This section is for Horizon core contributors only.
+
+The following should be done once prior to attempting to release a new version of Horizon.
+
+1. Create an account at http://issues.sonatype.org
+2. Request publish access at https://issues.sonatype.org/browse/OSSRH-11183
+3. Create an account at http://oss.sonatype.org
+4. Create a user token:
+ - Login into Sonatype OSS with the credentials from the previous step
+ - Open up your profile
+ - Select user token from the profile settings dropdown
+ - Click access user token
+5. Create ```~/.sbt/0.13/sonatype.sbt``` using the user token from the previous step:
+
+  ```scala
+  credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", <username>, <password>)
+  ```
+
+6. If you haven't done so previously, open sbt in Horizon to create and publish a PGP key pair using these commands:
+  - ```set pgpReadOnly := false```
+  - ```pgp-cmd gen-key```. Take note of the email address you set. You'll use it in the next command.
+  - ```pgp-cmd send-key $EMAILADDR hkp://keyserver.ubuntu.com```
+  - See http://www.scala-sbt.org/sbt-pgp/usage.html for more information
+7. Close sbt in Horizon
+
+## Releasing A New Version of Horizon
+
+This section is for Horizon core contributors only.
+
+All releases must be done from a release branch that merges into master.
+
+1. Complete the steps in the "Publishing to Sonatype OSS" section above
+2. Create a `release/$RELEASENAME` branch
+3. [Open a pull request](https://github.com/paypal/horizon/compare) merging your branch from (2) into `master`
+4. Perform the release using ```sbt "release with-defaults"```
+5. Go to http://oss.sonatype.org and login
+6. Go to “Staging Repositories” (on left side)
+7. Find your repo (at the bottom) 
+8. Click close
+9. Click release
+10. Merge your PR from (3), then merge `release/$RELEASENAME` into `develop`
 
 # Contributing
 
