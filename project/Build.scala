@@ -136,6 +136,8 @@ object BuildSettings {
             Some("releases"  at nexus + "service/local/staging/deploy/maven2")
         }
     },
+    // scalaz-stream_2.10 is not on Maven Central, until that changes, this line needs to stay in
+    resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => false },
