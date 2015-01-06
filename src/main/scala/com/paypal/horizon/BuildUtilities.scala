@@ -68,7 +68,7 @@ object BuildUtilitiesKeys {
 /**
  * Primary plugin object used to access all major build utilities.
  *
- * Mixes in [[com.paypal.horizon.sbt.GitInfo]], a trait which can be used to access Git repository information for the current build.
+ * Mixes in [[com.paypal.horizon.GitInfo]], a trait which can be used to access Git repository information for the current build.
  *
  * To access add the following import statement:
  *
@@ -177,12 +177,12 @@ object BuildUtilities extends Plugin with GitInfo {
    *   apiMappings ++= {
    *     import BuildUtilities._
    *     val links = Seq(
-   *       findManagedDependency("org.scala-lang", "scala-library").value.map(d => d -> url(s"http://www.scala-lang.org/api/$scalaVsn/")),
-   *       findManagedDependency("com.typesafe.akka", "akka-actor").value.map(d => d -> url(s"http://doc.akka.io/api/akka/$akkaVersion/")),
+   *       findManagedDependency("org.scala-lang", "scala-library").value.map(d => d -> url(s"http://www.scala-lang.org/api/<scalaVsn>/")),
+   *       findManagedDependency("com.typesafe.akka", "akka-actor").value.map(d => d -> url(s"http://doc.akka.io/api/akka/<akkaVersion>/")),
    *       findManagedDependency("com.typesafe", "config").value.map(d => d -> url("http://typesafehub.github.io/config/latest/api/")),
    *       findManagedDependency("org.slf4j", "slf4j-api").value.map(d => d -> url("http://www.slf4j.org/api/")),
-   *       findManagedDependency("com.typesafe.akka", "akka-testkit").value.map(d => d -> url(s"http://doc.akka.io/api/akka/$akkaVersion/")),
-   *       findManagedDependency("org.specs2", "specs2").value.map(d => d -> url(s"http://etorreborre.github.io/specs2/api/SPECS2-$specs2Version/"))
+   *       findManagedDependency("com.typesafe.akka", "akka-testkit").value.map(d => d -> url(s"http://doc.akka.io/api/akka/<akkaVersion>/")),
+   *       findManagedDependency("org.specs2", "specs2").value.map(d => d -> url(s"http://etorreborre.github.io/specs2/api/SPECS2-<specs2Version>"))
    *     )
    *     links.collect { case Some(d) => d }.toMap
    *   }
@@ -237,12 +237,12 @@ object BuildUtilities extends Plugin with GitInfo {
    *
    * - ghpagesNoJekyll (sbt-ghpages) is set to false
    *
-   * - siteMappings (sbt-site) is overridden to create a folder structure like /api/$version
+   * - siteMappings (sbt-site) is overridden to create a folder structure like /api/<version>
    *
    * - synchLocal (sbt-ghpages) is overridden so older docs are not deleted
    *
    * - repository (sbt-ghpages) is overridden to clone the repo's gh-pages branch into a directory structure of the form:
-   *   ~/.sbt/ghpages/$name/$repo
+   *   ~/.sbt/ghpages/<name>/<repo>
    *
    * - changelog is set to CHANGELOG.md
    *
@@ -273,7 +273,7 @@ object BuildUtilities extends Plugin with GitInfo {
    *   )
    * }}}
    *
-   * Provided you have included `utilitySettings` in your root project's build settings, the `defaultReleaseProcess` using [[sbtrelease]]
+   * Provided you have included `utilitySettings` in your root project's build settings, the `defaultReleaseProcess` using 'sbtrelease'
    * includes a step to generate and push docs.
    *
    * To manually create, run the following sbt command:
