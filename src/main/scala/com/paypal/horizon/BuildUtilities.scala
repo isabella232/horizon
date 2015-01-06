@@ -273,7 +273,7 @@ object BuildUtilities extends Plugin with GitInfo {
    *   )
    * }}}
    *
-   * Provided you have included `utilitySettings` in your root project's build settings, the `defaultReleaseProcess` using 'sbtrelease'
+   * Provided you have included `utilitySettings` in your root project's build settings, the `defaultReleaseProcess` using `sbtrelease`
    * includes a step to generate and push docs.
    *
    * To manually create, run the following sbt command:
