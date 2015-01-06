@@ -110,7 +110,7 @@ object BuildSettings {
     sbtPlugin := true,
     conflictManager := ConflictManager.strict,
     fork := true,
-    scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xlint", "-Xfatal-warnings", "-target:jvm-1.7"),
+    scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xlint", "-target:jvm-1.7"),
     scalacOptions in Test ++= Seq("-Yrangepos"),
     dependencyOverrides <++= scalaVersion { vsn => Set(
       "org.scala-lang" % "scala-library"  % vsn,
