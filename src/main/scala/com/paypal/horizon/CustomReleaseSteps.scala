@@ -239,7 +239,7 @@ object ReadmeReleaseSteps extends CommonContext {
 }
 
 /**
- * Includes a release step `generateAndPushDocs` for ``sbtrelease` to generate ScalaDocs
+ * Includes a release step `generateAndPushDocs` for `sbtrelease` to generate ScalaDocs
  * using sbt-unidoc and sbt-site, followed by pushing them to the gh-pages branch of the current project's repository.
  *
  * Depends on adding `utilitySettings` to root project build settings.
