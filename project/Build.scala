@@ -124,7 +124,7 @@ object BuildSettings {
     addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.0"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit" % "org.eclipse.jgit" % "3.3.0.201403021825-r",
-      "org.specs2" %% "specs2" % "2.3.12" % "test"
+      "org.specs2" %% "specs2" % "2.4.15" % "test"
     ),
     apiURL := Some(url("http://paypal.github.io/horizon/api/")),
     autoAPIMappings := true,
