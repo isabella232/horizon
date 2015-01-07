@@ -150,7 +150,7 @@ lazy val parent = Project("parent", file("."),
 Defines a set of release steps for use with the `sbt-release` plugin. To include `sbt-release` in your project:
 
 1. Add the plugin to `plugins.sbt`, something like `addSbtPlugin("com.github.gseitz" % "sbt-release" % "$version")`
-2. Include the release settings, `releaseSettings`, to your root project's build settings.
+2. Add the release settings, `releaseSettings`, to every module in your project.
 3. Set the `releaseProcess`,
 
 ```
