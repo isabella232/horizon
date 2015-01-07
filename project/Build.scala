@@ -116,7 +116,7 @@ object BuildSettings {
       "org.scala-lang" % "scala-library"  % vsn,
       "org.scala-lang" % "scala-compiler" % vsn
     )},
-    addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.4"),
+    addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.5"),
     addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.2" exclude("com.typesafe.sbt", "sbt-git")),
     addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.7.0"),
     addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.6.4" exclude ("org.eclipse.jgit", "org.eclipse.jgit")),
