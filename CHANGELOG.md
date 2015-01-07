@@ -1,3 +1,7 @@
+# 0.3.2 01/07/2015 released by taylorleese
+* Bumped sbt release plugin to 0.8.5
+* Updated instructions in readme for 0.8.5
+
 # 0.3.1 01/05/2015 released by taylorleese
 * Changed sbt release plugin to 0.8.4 to fix publishing unsigned artifacts
 
