@@ -110,7 +110,7 @@ object BuildSettings {
     sbtPlugin := true,
     conflictManager := ConflictManager.strict,
     fork := true,
-    scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
+    scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xlint", "-target:jvm-1.7"),
     scalacOptions in Test ++= Seq("-Yrangepos"),
     dependencyOverrides <++= scalaVersion { vsn => Set(
       "org.scala-lang" % "scala-library"  % vsn,
@@ -124,7 +124,7 @@ object BuildSettings {
     addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.0"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit" % "org.eclipse.jgit" % "3.3.0.201403021825-r",
-      "org.specs2" %% "specs2" % "2.3.12" % "test"
+      "org.specs2" %% "specs2" % "2.4.15" % "test"
     ),
     apiURL := Some(url("http://paypal.github.io/horizon/api/")),
     autoAPIMappings := true,
@@ -136,6 +136,8 @@ object BuildSettings {
             Some("releases"  at nexus + "service/local/staging/deploy/maven2")
         }
     },
+    // scalaz-stream_2.10 is not on Maven Central, until that changes, this line needs to stay in
+    resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => false },
