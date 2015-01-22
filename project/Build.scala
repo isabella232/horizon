@@ -142,6 +142,7 @@ object BuildSettings {
     compileScalastyle := scalastyle.in(Compile).toTask("").value,
     (compile in Compile) <<= (compile in Compile).dependsOn(compileScalastyle),
     (scalastyleConfigUrl in Compile) := Option(url("https://raw.githubusercontent.com/paypal/cascade/develop/scalastyle-config.xml")),
+    (scalastyleFailOnError in Compile) := true,
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => false },
