@@ -29,7 +29,7 @@ import sbtrelease._
 import sbtrelease.Utilities._
 import scala.io.Source
 import net.virtualvoid.sbt.graph.Plugin
-import org.scalastyle.sbt.ScalastylePlugin
+import org.scalastyle.sbt.ScalastylePlugin._
 import de.johoop.jacoco4sbt._
 import JacocoPlugin._
 import ReleaseStateTransformations._
@@ -63,7 +63,6 @@ object BuildSettings {
   lazy val standardPluginSettings = Defaults.coreDefaultSettings ++
     releaseSettings ++
     Plugin.graphSettings ++
-    ScalastylePlugin.Settings ++
     jacoco.settings ++
     site.settings ++
     ghpages.settings ++
@@ -103,6 +102,8 @@ object BuildSettings {
       )
     )
 
+  lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
+
   lazy val standardSettings = standardPluginSettings ++ Seq(
     organization := org,
     name := "horizon",
@@ -137,7 +138,11 @@ object BuildSettings {
         }
     },
     // scalaz-stream_2.10 is not on Maven Central, until that changes, this line needs to stay in
-    resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
+    resolvers += Resolver.bintrayRepo("scalaz", "releases"),
+    compileScalastyle := scalastyle.in(Compile).toTask("").value,
+    compile in Compile <<= (compile in Compile).dependsOn(compileScalastyle),
+    scalastyleConfigUrl in Compile := Option(url("https://raw.githubusercontent.com/paypal/scala-style-guide/develop/scalastyle-config.xml")),
+    scalastyleFailOnError in Compile := true,
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => false },
