@@ -29,6 +29,7 @@ import sbtrelease._
 import sbtrelease.Utilities._
 import scala.io.Source
 import net.virtualvoid.sbt.graph.Plugin
+import org.scalastyle.sbt.ScalastylePlugin
 import org.scalastyle.sbt.ScalastylePlugin._
 import de.johoop.jacoco4sbt._
 import JacocoPlugin._
@@ -63,6 +64,7 @@ object BuildSettings {
   lazy val standardPluginSettings = Defaults.coreDefaultSettings ++
     releaseSettings ++
     Plugin.graphSettings ++
+    ScalastylePlugin.projectSettings ++
     jacoco.settings ++
     site.settings ++
     ghpages.settings ++
@@ -138,7 +140,6 @@ object BuildSettings {
     // scalaz-stream_2.10 is not on Maven Central, until that changes, this line needs to stay in
     resolvers += Resolver.bintrayRepo("scalaz", "releases"),
     scalastyleConfigUrl in Compile := Option(url("https://raw.githubusercontent.com/paypal/scala-style-guide/develop/scalastyle-config.xml")),
-    scalastyleFailOnError in Compile := true,
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => false },
