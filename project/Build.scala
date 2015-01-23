@@ -64,7 +64,7 @@ object BuildSettings {
   lazy val standardPluginSettings = Defaults.coreDefaultSettings ++
     releaseSettings ++
     Plugin.graphSettings ++
-    Scalastyle.projectSettings ++
+    ScalastylePlugin.projectSettings ++
     jacoco.settings ++
     site.settings ++
     ghpages.settings ++
