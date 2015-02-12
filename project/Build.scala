@@ -122,7 +122,7 @@ object BuildSettings {
     addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.7.0"),
     addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.6.4" exclude ("org.eclipse.jgit", "org.eclipse.jgit")),
     addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0"),
-    addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.0"),
+    addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.2"),
     libraryDependencies ++= Seq(
       "org.eclipse.jgit" % "org.eclipse.jgit" % "3.3.0.201403021825-r",
       "org.specs2" %% "specs2" % "2.4.15" % "test"

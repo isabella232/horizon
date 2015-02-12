@@ -16,4 +16,4 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.6.4")
 
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
 
-addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.0")
+addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.2")
